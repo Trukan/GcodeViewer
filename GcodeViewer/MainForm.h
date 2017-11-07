@@ -43,6 +43,7 @@ namespace GcodeViewer {
 	private: System::Windows::Forms::ToolStripMenuItem^  çàêğûòüToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  âûõîäToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  âûõîäToolStripMenuItem1;
+	private: System::Windows::Forms::Panel^  panel1;
 
 	private:
 		/// <summary>
@@ -66,24 +67,27 @@ namespace GcodeViewer {
 			this->çàêğûòüToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->âûõîäToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->âûõîäToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->panel1 = (gcnew System::Windows::Forms::Panel());
 			this->toolStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// glControl1
 			// 
 			this->glControl1->BackColor = System::Drawing::Color::Black;
-			this->glControl1->Location = System::Drawing::Point(188, 12);
+			this->glControl1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->glControl1->Location = System::Drawing::Point(212, 28);
 			this->glControl1->Name = L"glControl1";
-			this->glControl1->Size = System::Drawing::Size(561, 356);
+			this->glControl1->Size = System::Drawing::Size(793, 698);
 			this->glControl1->TabIndex = 0;
-			this->glControl1->VSync = false;
+			this->glControl1->VSync = true;
+			this->glControl1->AutoSizeChanged += gcnew System::EventHandler(this, &MainForm::MainForm_Resize);
 			// 
 			// toolStrip1
 			// 
 			this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->toolStripDropDownButton1 });
 			this->toolStrip1->Location = System::Drawing::Point(0, 0);
 			this->toolStrip1->Name = L"toolStrip1";
-			this->toolStrip1->Size = System::Drawing::Size(741, 25);
+			this->toolStrip1->Size = System::Drawing::Size(1008, 25);
 			this->toolStrip1->TabIndex = 1;
 			this->toolStrip1->Text = L"toolStrip1";
 			// 
@@ -105,6 +109,7 @@ namespace GcodeViewer {
 			this->îòêğûòüToolStripMenuItem->Name = L"îòêğûòüToolStripMenuItem";
 			this->îòêğûòüToolStripMenuItem->Size = System::Drawing::Size(153, 22);
 			this->îòêğûòüToolStripMenuItem->Text = L"Îòêğûòü";
+			this->îòêğûòüToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::îòêğûòüToolStripMenuItem_Click);
 			// 
 			// ñîõğàíèòüToolStripMenuItem
 			// 
@@ -131,15 +136,24 @@ namespace GcodeViewer {
 			this->âûõîäToolStripMenuItem1->Size = System::Drawing::Size(153, 22);
 			this->âûõîäToolStripMenuItem1->Text = L"Âûõîä";
 			// 
+			// panel1
+			// 
+			this->panel1->Location = System::Drawing::Point(0, 28);
+			this->panel1->Name = L"panel1";
+			this->panel1->Size = System::Drawing::Size(206, 701);
+			this->panel1->TabIndex = 2;
+			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(741, 364);
+			this->ClientSize = System::Drawing::Size(1008, 729);
+			this->Controls->Add(this->panel1);
 			this->Controls->Add(this->toolStrip1);
 			this->Controls->Add(this->glControl1);
 			this->Name = L"MainForm";
-			this->Text = L"MainForm";
+			this->Text = L"GcodeViewer";
+			this->Resize += gcnew System::EventHandler(this, &MainForm::MainForm_Resize);
 			this->toolStrip1->ResumeLayout(false);
 			this->toolStrip1->PerformLayout();
 			this->ResumeLayout(false);
@@ -149,5 +163,12 @@ namespace GcodeViewer {
 #pragma endregion
 	private: System::Void çàêğûòüToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 	}
+private: System::Void îòêğûòüToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+	
+}
+
+private: System::Void MainForm_Resize(System::Object^  sender, System::EventArgs^  e) {
+	glControl1->Size = System::Drawing::Size(this->Width - 232, this->Height - 72);
+}
 };
 }
