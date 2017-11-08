@@ -43,11 +43,15 @@ namespace GcodeViewer {
 	private: System::Windows::Forms::ToolStripMenuItem^  ÒÓı‡ÌËÚ¸ ‡ÍToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  Á‡Í˚Ú¸ToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  ‚˚ıÓ‰ToolStripMenuItem1;
-	private: System::Windows::Forms::Panel^  panel1;
+	private: System::Windows::Forms::Panel^  panelUnderMenu;
 	private: System::Windows::Forms::OpenFileDialog^  openFileDialog1;
 	private: System::Windows::Forms::SaveFileDialog^  saveFileDialog1;
 	private: System::Windows::Forms::Timer^  timer1;
 	private: System::ComponentModel::IContainer^  components;
+	private: System::Windows::Forms::TextBox^  textUnderMenu;
+	private: System::Windows::Forms::DataGridView^  dataGridView1;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
+
 
 	private:
 		/// <summary>
@@ -64,6 +68,8 @@ namespace GcodeViewer {
 		{
 			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MainForm::typeid));
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			this->glControl1 = (gcnew OpenTK::GLControl());
 			this->toolStrip1 = (gcnew System::Windows::Forms::ToolStrip());
 			this->toolStripDropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
@@ -72,11 +78,16 @@ namespace GcodeViewer {
 			this->ÒÓı‡ÌËÚ¸ ‡ÍToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->Á‡Í˚Ú¸ToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->‚˚ıÓ‰ToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->panel1 = (gcnew System::Windows::Forms::Panel());
+			this->panelUnderMenu = (gcnew System::Windows::Forms::Panel());
+			this->dataGridView1 = (gcnew System::Windows::Forms::DataGridView());
+			this->textUnderMenu = (gcnew System::Windows::Forms::TextBox());
 			this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
+			this->Column1 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->toolStrip1->SuspendLayout();
+			this->panelUnderMenu->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// glControl1
@@ -144,30 +155,92 @@ namespace GcodeViewer {
 			this->‚˚ıÓ‰ToolStripMenuItem1->Size = System::Drawing::Size(153, 22);
 			this->‚˚ıÓ‰ToolStripMenuItem1->Text = L"¬˚ıÓ‰";
 			// 
-			// panel1
+			// panelUnderMenu
 			// 
-			this->panel1->Location = System::Drawing::Point(0, 28);
-			this->panel1->Name = L"panel1";
-			this->panel1->Size = System::Drawing::Size(206, 701);
-			this->panel1->TabIndex = 2;
+			this->panelUnderMenu->Controls->Add(this->dataGridView1);
+			this->panelUnderMenu->Location = System::Drawing::Point(0, 47);
+			this->panelUnderMenu->Name = L"panelUnderMenu";
+			this->panelUnderMenu->Size = System::Drawing::Size(206, 682);
+			this->panelUnderMenu->TabIndex = 2;
 			// 
-			// openFileDialog1
+			// dataGridView1
 			// 
-			this->openFileDialog1->FileName = L"";
+			this->dataGridView1->AutoSizeColumnsMode = System::Windows::Forms::DataGridViewAutoSizeColumnsMode::ColumnHeader;
+			this->dataGridView1->BackgroundColor = System::Drawing::SystemColors::GradientInactiveCaption;
+			this->dataGridView1->CellBorderStyle = System::Windows::Forms::DataGridViewCellBorderStyle::SunkenVertical;
+			this->dataGridView1->ColumnHeadersBorderStyle = System::Windows::Forms::DataGridViewHeaderBorderStyle::Single;
+			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(1) { this->Column1 });
+			this->dataGridView1->Cursor = System::Windows::Forms::Cursors::IBeam;
+			this->dataGridView1->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->dataGridView1->EditMode = System::Windows::Forms::DataGridViewEditMode::EditOnEnter;
+			this->dataGridView1->EnableHeadersVisualStyles = false;
+			this->dataGridView1->Location = System::Drawing::Point(0, 0);
+			this->dataGridView1->Margin = System::Windows::Forms::Padding(1);
+			this->dataGridView1->MinimumSize = System::Drawing::Size(0, 100);
+			this->dataGridView1->Name = L"dataGridView1";
+			dataGridViewCellStyle1->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+			dataGridViewCellStyle1->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			dataGridViewCellStyle1->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle1->Format = L"N0";
+			dataGridViewCellStyle1->NullValue = nullptr;
+			dataGridViewCellStyle1->SelectionBackColor = System::Drawing::SystemColors::MenuHighlight;
+			dataGridViewCellStyle1->SelectionForeColor = System::Drawing::SystemColors::Desktop;
+			dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dataGridView1->RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle2->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle2->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle2;
+			this->dataGridView1->RowTemplate->DefaultCellStyle->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
+			this->dataGridView1->RowTemplate->ErrorText = L"00000";
+			this->dataGridView1->RowTemplate->Height = 17;
+			this->dataGridView1->RowTemplate->Resizable = System::Windows::Forms::DataGridViewTriState::False;
+			this->dataGridView1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
+			this->dataGridView1->Size = System::Drawing::Size(206, 682);
+			this->dataGridView1->TabIndex = 1;
+			this->dataGridView1->RowCount = 100;
+			// 
+			// textUnderMenu
+			// 
+			this->textUnderMenu->BackColor = System::Drawing::SystemColors::MenuBar;
+			this->textUnderMenu->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->textUnderMenu->Location = System::Drawing::Point(3, 28);
+			this->textUnderMenu->Name = L"textUnderMenu";
+			this->textUnderMenu->ReadOnly = true;
+			this->textUnderMenu->ShortcutsEnabled = false;
+			this->textUnderMenu->Size = System::Drawing::Size(203, 13);
+			this->textUnderMenu->TabIndex = 0;
+			this->textUnderMenu->TabStop = false;
+			this->textUnderMenu->Text = L"Test Text Maxlength char [37]";
 			// 
 			// saveFileDialog1
 			// 
-			this->saveFileDialog1->AddExtension = L".tap";
-			this->saveFileDialog1->Filter = "G-code arcs Files (*.tap)|*.tap|All Files (*.*)|*.*";
-			this->saveFileDialog1->FileName = L"";
-			this->saveFileDialog1->OverwritePrompt = true;
+			this->saveFileDialog1->Filter = L"G-code arcs Files (*.tap)|*.tap|All Files (*.*)|*.*";
+			// 
+			// Column1
+			// 
+			this->Column1->DividerWidth = 2;
+			this->Column1->FillWeight = 160;
+			this->Column1->Frozen = true;
+			this->Column1->HeaderText = L" ÓÏ‡Ì‰˚";
+			this->Column1->MinimumWidth = 160;
+			this->Column1->Name = L"Column1";
+			this->Column1->ReadOnly = true;
+			this->Column1->Resizable = System::Windows::Forms::DataGridViewTriState::False;
+			this->Column1->SortMode = System::Windows::Forms::DataGridViewColumnSortMode::NotSortable;
+			this->Column1->Width = 160;
 			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1008, 729);
-			this->Controls->Add(this->panel1);
+			this->Controls->Add(this->panelUnderMenu);
+			this->Controls->Add(this->textUnderMenu);
 			this->Controls->Add(this->toolStrip1);
 			this->Controls->Add(this->glControl1);
 			this->Name = L"MainForm";
@@ -175,6 +248,8 @@ namespace GcodeViewer {
 			this->Resize += gcnew System::EventHandler(this, &MainForm::MainForm_Resize);
 			this->toolStrip1->ResumeLayout(false);
 			this->toolStrip1->PerformLayout();
+			this->panelUnderMenu->ResumeLayout(false);
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -200,5 +275,6 @@ namespace GcodeViewer {
 	private: System::Void MainForm_Resize(System::Object^  sender, System::EventArgs^  e) {
 		this->glControl1->Size = System::Drawing::Size(this->Width - 232, this->Height - 72);
 	}
+
 };
 }
