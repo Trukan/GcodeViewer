@@ -40,16 +40,20 @@ namespace GcodeViewer {
 	private: System::Windows::Forms::ToolStripDropDownButton^  toolStripDropDownButton1;
 	private: System::Windows::Forms::ToolStripMenuItem^  îòêğûòüToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  ñîõğàíèòüToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  ñîõğàíèòüÊàêToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  çàêğûòüToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  âûõîäToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  âûõîäToolStripMenuItem1;
 	private: System::Windows::Forms::Panel^  panel1;
+	private: System::Windows::Forms::OpenFileDialog^  openFileDialog1;
+	private: System::Windows::Forms::SaveFileDialog^  saveFileDialog1;
+	private: System::Windows::Forms::Timer^  timer1;
+	private: System::ComponentModel::IContainer^  components;
 
 	private:
 		/// <summary>
 		/// Îáÿçàòåëüíàÿ ïåğåìåííàÿ êîíñòğóêòîğà.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		 String^ opndfileName = "";
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -58,16 +62,20 @@ namespace GcodeViewer {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MainForm::typeid));
 			this->glControl1 = (gcnew OpenTK::GLControl());
 			this->toolStrip1 = (gcnew System::Windows::Forms::ToolStrip());
 			this->toolStripDropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
 			this->îòêğûòüToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->ñîõğàíèòüToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->ñîõğàíèòüÊàêToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->çàêğûòüToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->âûõîäToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->âûõîäToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
+			this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
+			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
+			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->toolStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -96,7 +104,7 @@ namespace GcodeViewer {
 			this->toolStripDropDownButton1->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
 			this->toolStripDropDownButton1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(5) {
 				this->îòêğûòüToolStripMenuItem,
-					this->ñîõğàíèòüToolStripMenuItem, this->çàêğûòüToolStripMenuItem, this->âûõîäToolStripMenuItem, this->âûõîäToolStripMenuItem1
+					this->ñîõğàíèòüToolStripMenuItem, this->ñîõğàíèòüÊàêToolStripMenuItem, this->çàêğûòüToolStripMenuItem, this->âûõîäToolStripMenuItem1
 			});
 			this->toolStripDropDownButton1->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripDropDownButton1.Image")));
 			this->toolStripDropDownButton1->ImageTransparentColor = System::Drawing::Color::Magenta;
@@ -117,18 +125,18 @@ namespace GcodeViewer {
 			this->ñîõğàíèòüToolStripMenuItem->Size = System::Drawing::Size(153, 22);
 			this->ñîõğàíèòüToolStripMenuItem->Text = L"Ñîõğàíèòü";
 			// 
+			// ñîõğàíèòüÊàêToolStripMenuItem
+			// 
+			this->ñîõğàíèòüÊàêToolStripMenuItem->Name = L"ñîõğàíèòüÊàêToolStripMenuItem";
+			this->ñîõğàíèòüÊàêToolStripMenuItem->Size = System::Drawing::Size(153, 22);
+			this->ñîõğàíèòüÊàêToolStripMenuItem->Text = L"Ñîõğàíèòü êàê";
+			this->ñîõğàíèòüÊàêToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::ñîõğàíèòüÊàêToolStripMenuItem_Click);
+			// 
 			// çàêğûòüToolStripMenuItem
 			// 
 			this->çàêğûòüToolStripMenuItem->Name = L"çàêğûòüToolStripMenuItem";
 			this->çàêğûòüToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->çàêğûòüToolStripMenuItem->Text = L"Ñîõğàíèòü êàê";
-			this->çàêğûòüToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::çàêğûòüToolStripMenuItem_Click);
-			// 
-			// âûõîäToolStripMenuItem
-			// 
-			this->âûõîäToolStripMenuItem->Name = L"âûõîäToolStripMenuItem";
-			this->âûõîäToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->âûõîäToolStripMenuItem->Text = L"Çàêğûòü";
+			this->çàêğûòüToolStripMenuItem->Text = L"Çàêğûòü";
 			// 
 			// âûõîäToolStripMenuItem1
 			// 
@@ -142,6 +150,17 @@ namespace GcodeViewer {
 			this->panel1->Name = L"panel1";
 			this->panel1->Size = System::Drawing::Size(206, 701);
 			this->panel1->TabIndex = 2;
+			// 
+			// openFileDialog1
+			// 
+			this->openFileDialog1->FileName = L"";
+			// 
+			// saveFileDialog1
+			// 
+			this->saveFileDialog1->AddExtension = L".tap";
+			this->saveFileDialog1->Filter = "G-code arcs Files (*.tap)|*.tap|All Files (*.*)|*.*";
+			this->saveFileDialog1->FileName = L"";
+			this->saveFileDialog1->OverwritePrompt = true;
 			// 
 			// MainForm
 			// 
@@ -161,14 +180,25 @@ namespace GcodeViewer {
 
 		}
 #pragma endregion
-	private: System::Void çàêğûòüToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+	//îáğàáîòêà íàæàòèÿ êíîïêè ìåíş "Ñîõğàíèòü êàê"
+	private: System::Void ñîõğàíèòüÊàêToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+		this->saveFileDialog1->FileName = opndfileName;
+		if(System::Windows::Forms::DialogResult::OK == this->saveFileDialog1->ShowDialog())
+			this->Text = "GcodeViewer -  ôàéë " + this->saveFileDialog1->FileName + " ñîõğàíåí";
+		else 
+			this->Text = L"GcodeViewer";
 	}
-private: System::Void îòêğûòüToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-	
-}
 
-private: System::Void MainForm_Resize(System::Object^  sender, System::EventArgs^  e) {
-	glControl1->Size = System::Drawing::Size(this->Width - 232, this->Height - 72);
-}
+	//îáğàáîòêà íàæàòèÿ êíîïêè ìåíş "îòêğûòü"
+	private: System::Void îòêğûòüToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+		this->openFileDialog1->ShowDialog();
+		opndfileName = this->openFileDialog1->FileName;
+		this->Text = "GcodeViewer -  ôàéë " + opndfileName + " îòêğûò";
+	}
+	
+	//îáğàáîòêà èçìåíåíèÿ ğàçìåğîâ îêíà
+	private: System::Void MainForm_Resize(System::Object^  sender, System::EventArgs^  e) {
+		this->glControl1->Size = System::Drawing::Size(this->Width - 232, this->Height - 72);
+	}
 };
 }
