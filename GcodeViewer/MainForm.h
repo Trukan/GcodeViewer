@@ -51,6 +51,8 @@ namespace GcodeViewer {
 	private: System::Windows::Forms::TextBox^  textUnderMenu;
 	private: System::Windows::Forms::DataGridView^  dataGridView1;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
+	private: System::Windows::Forms::StatusStrip^  statusStrip1;
+	private: System::Windows::Forms::ToolStripStatusLabel^  toolStripStatusLabel1;
 
 
 	private:
@@ -80,14 +82,17 @@ namespace GcodeViewer {
 			this->выходToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->panelUnderMenu = (gcnew System::Windows::Forms::Panel());
 			this->dataGridView1 = (gcnew System::Windows::Forms::DataGridView());
+			this->Column1 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->textUnderMenu = (gcnew System::Windows::Forms::TextBox());
 			this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
-			this->Column1 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->statusStrip1 = (gcnew System::Windows::Forms::StatusStrip());
+			this->toolStripStatusLabel1 = (gcnew System::Windows::Forms::ToolStripStatusLabel());
 			this->toolStrip1->SuspendLayout();
 			this->panelUnderMenu->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
+			this->statusStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// glControl1
@@ -96,7 +101,7 @@ namespace GcodeViewer {
 			this->glControl1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
 			this->glControl1->Location = System::Drawing::Point(212, 28);
 			this->glControl1->Name = L"glControl1";
-			this->glControl1->Size = System::Drawing::Size(793, 698);
+			this->glControl1->Size = System::Drawing::Size(793, 547);
 			this->glControl1->TabIndex = 0;
 			this->glControl1->VSync = true;
 			this->glControl1->AutoSizeChanged += gcnew System::EventHandler(this, &MainForm::MainForm_Resize);
@@ -160,7 +165,8 @@ namespace GcodeViewer {
 			this->panelUnderMenu->Controls->Add(this->dataGridView1);
 			this->panelUnderMenu->Location = System::Drawing::Point(0, 47);
 			this->panelUnderMenu->Name = L"panelUnderMenu";
-			this->panelUnderMenu->Size = System::Drawing::Size(206, 682);
+			this->panelUnderMenu->Size = System::Drawing::Size(206, 528);
+			this->panelUnderMenu->MinimumSize = System::Drawing::Size(0, 150);
 			this->panelUnderMenu->TabIndex = 2;
 			// 
 			// dataGridView1
@@ -200,9 +206,21 @@ namespace GcodeViewer {
 			this->dataGridView1->RowTemplate->Height = 17;
 			this->dataGridView1->RowTemplate->Resizable = System::Windows::Forms::DataGridViewTriState::False;
 			this->dataGridView1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
-			this->dataGridView1->Size = System::Drawing::Size(206, 682);
+			this->dataGridView1->Size = System::Drawing::Size(206, 500);
 			this->dataGridView1->TabIndex = 1;
-			this->dataGridView1->RowCount = 100;
+			// 
+			// Column1
+			// 
+			this->Column1->DividerWidth = 2;
+			this->Column1->FillWeight = 160;
+			this->Column1->Frozen = true;
+			this->Column1->HeaderText = L"Команды";
+			this->Column1->MinimumWidth = 160;
+			this->Column1->Name = L"Column1";
+			this->Column1->ReadOnly = true;
+			this->Column1->Resizable = System::Windows::Forms::DataGridViewTriState::False;
+			this->Column1->SortMode = System::Windows::Forms::DataGridViewColumnSortMode::NotSortable;
+			this->Column1->Width = 160;
 			// 
 			// textUnderMenu
 			// 
@@ -221,24 +239,31 @@ namespace GcodeViewer {
 			// 
 			this->saveFileDialog1->Filter = L"G-code arcs Files (*.tap)|*.tap|All Files (*.*)|*.*";
 			// 
-			// Column1
+			// statusStrip1
 			// 
-			this->Column1->DividerWidth = 2;
-			this->Column1->FillWeight = 160;
-			this->Column1->Frozen = true;
-			this->Column1->HeaderText = L"Команды";
-			this->Column1->MinimumWidth = 160;
-			this->Column1->Name = L"Column1";
-			this->Column1->ReadOnly = true;
-			this->Column1->Resizable = System::Windows::Forms::DataGridViewTriState::False;
-			this->Column1->SortMode = System::Windows::Forms::DataGridViewColumnSortMode::NotSortable;
-			this->Column1->Width = 160;
+			this->statusStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->toolStripStatusLabel1 });
+			this->statusStrip1->Location = System::Drawing::Point(0, 530);
+			this->statusStrip1->Name = L"statusStrip1";
+			this->statusStrip1->Size = System::Drawing::Size(1008, 22);
+			this->statusStrip1->TabIndex = 3;
+			this->statusStrip1->Text = L"statusStrip1";
+			// 
+			// toolStripStatusLabel1
+			// 
+			this->toolStripStatusLabel1->AutoSize = false;
+			this->toolStripStatusLabel1->Margin = System::Windows::Forms::Padding(3, 2, 0, 2);
+			this->toolStripStatusLabel1->Name = L"toolStripStatusLabel1";
+			this->toolStripStatusLabel1->Overflow = System::Windows::Forms::ToolStripItemOverflow::Never;
+			this->toolStripStatusLabel1->Size = System::Drawing::Size(350, 18);
+			this->toolStripStatusLabel1->Text = L"statusLabel";
 			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1008, 729);
+			this->ClientSize = System::Drawing::Size(1008, 600);
+			this->MinimumSize = System::Drawing::Size(480, 300);
+			this->Controls->Add(this->statusStrip1);
 			this->Controls->Add(this->panelUnderMenu);
 			this->Controls->Add(this->textUnderMenu);
 			this->Controls->Add(this->toolStrip1);
@@ -250,6 +275,8 @@ namespace GcodeViewer {
 			this->toolStrip1->PerformLayout();
 			this->panelUnderMenu->ResumeLayout(false);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->EndInit();
+			this->statusStrip1->ResumeLayout(false);
+			this->statusStrip1->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -273,7 +300,11 @@ namespace GcodeViewer {
 	
 	//обработка изменения размеров окна
 	private: System::Void MainForm_Resize(System::Object^  sender, System::EventArgs^  e) {
-		this->glControl1->Size = System::Drawing::Size(this->Width - 232, this->Height - 72);
+		this->glControl1->Size = System::Drawing::Size(this->Width - 232, this->Height - 92);
+		this->panelUnderMenu->Size = System::Drawing::Size(206, this->Height - 111);
+		this->toolStrip1->Size = System::Drawing::Size(this->Width - 4, 25);
+		this->statusStrip1->Size = System::Drawing::Size(this->Width - 4, 22);
+		this->Text = "" + this->panelUnderMenu->Size.Height;
 	}
 
 };
