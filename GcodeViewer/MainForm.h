@@ -2,6 +2,7 @@
 #include "GcodeData.h"
 namespace GcodeViewer {
 
+	using namespace GData;
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -63,10 +64,6 @@ namespace GcodeViewer {
 
 
 	private:
-		/// <summary>
-		/// Обязательная переменная конструктора.
-		/// </summary>
-		//имя открываемого файла
 		String^ opndfileName = "";
 		String^ editCellText = "";
 		cli::array<String^>^ tText;
@@ -75,6 +72,10 @@ namespace GcodeViewer {
 		System::Windows::Forms::BindingSource^ bindingSrc1;
 		System::Windows::Forms::DataGridView^  dataGridView1;
 		System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
+		/// <summary>
+		/// Обязательная переменная конструктора.
+		/// </summary>
+		//имя открываемого файла
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
