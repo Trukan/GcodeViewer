@@ -3,15 +3,15 @@ namespace GData {
 	using namespace System;
 	using namespace System::Collections;
 	using namespace System::Drawing;
-//	using namespace OpenTK;
-//	using namespace OpenTK::Platform::Windows;
-//	using namespace OpenTK::Graphics::OpenGL;
+	//	using namespace OpenTK;
+	//	using namespace OpenTK::Platform::Windows;
+	//	using namespace OpenTK::Graphics::OpenGL;
 
-	//перечисления состояний по основным и техническим модальным командам для проверки на последовательность
-	//и логику комманд
+		//перечисления состояний по основным и техническим модальным командам для проверки на последовательность
+		//и логику комманд
 	public enum class GState {
 		None = -1, NotLoad = 0, LineRun = 1, CircClockwise = 2, CircCntrClockwise = 3, NewNullCoor = 10,
-		SurfaceXY = 17, SurfaceZX=18, SurfaceYZ=19
+		SurfaceXY = 17, SurfaceZX = 18, SurfaceYZ = 19
 	};
 	public enum class Modal {
 		None = -1, PreStart = 0, StopNoReset = 2, StartRotateClockwise = 3, StartRotateCntrClockwise = 4,
@@ -55,16 +55,17 @@ namespace GData {
 		void set(int index, String^ value);
 		}
 
-			//возвращает строку, содержащую первое число от символа заданной строки с заданным индексом,
-			//если такого числа нет, то возвращает nulptr
-		String^ getStartFloat(String^,int startIndex);
-
 			//функция загрузки данных из файла в коллекцию строк комманд
 		bool loadFile(String^ filepath);
 
 		//функция транслирующая строчные команды коллекции в траекторию, 
 		// в ломаные линии некоторых цветов в коллекцию polyline
 		System::Collections::Generic::List<Polyline^>^ tranlate(System::Collections::Generic::List<String^>^ cmds);
+
+		//возвращает строку, содержащую первое число от символа заданной строки с заданным индексом,
+		//если такого числа нет, то возвращает System::String::Empty, если найдет две точки подряд то вернет nulptr
+	private: String^ getFloat(String^, int startIndex, int &backlastindex);
+
 	};
 
 }
