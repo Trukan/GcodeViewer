@@ -3,6 +3,7 @@ namespace GData {
 	using namespace System;
 	using namespace System::Collections;
 	using namespace System::Drawing;
+	using namespace System::Globalization;
 	//	using namespace OpenTK;
 	//	using namespace OpenTK::Platform::Windows;
 	//	using namespace OpenTK::Graphics::OpenGL;
@@ -15,7 +16,24 @@ namespace GData {
 	};
 	public enum class Modal {
 		None = -1, PreStart = 0, StopNoReset = 2, StartRotateClockwise = 3, StartRotateCntrClockwise = 4,
-		StopRotate = 5, ChangeInsrtument = 6, StopWhithReset = 30
+		StopRotate = 5, ChangeInsrtument = 6, StopWithReset = 30
+	};
+	//хранилище параметров команд одной строки
+	public ref struct kadr
+	{
+		kadr() {};
+		float x, y, z, i, j, k,f;
+		bool bx, by, bz, bi, bj, bk, bf, bs;
+		int s;
+		//notful reset exclude f,s
+		void reset() {
+			bx = false;
+			by = false;
+			bz = false;
+			bi = false;
+			bj = false;
+			bk = false;
+		}
 	};
 	//класс, предназначен для содержания координат точек ломаной неразрывной линии одного цвета (RGB)
 	public ref class Polyline sealed {
@@ -62,10 +80,22 @@ namespace GData {
 		// в ломаные линии некоторых цветов в коллекцию polyline
 		System::Collections::Generic::List<Polyline^>^ tranlate(System::Collections::Generic::List<String^>^ cmds);
 
+	private:
+		NumberFormatInfo^ formatInfo;
+
 		//возвращает строку, содержащую первое число от символа заданной строки с заданным индексом,
 		//если такого числа нет, то возвращает System::String::Empty, если найдет две точки подряд то вернет nulptr
-	private: String^ getFloat(String^, int startIndex, int &backlastindex);
+		String^ getNumeric(String^, int startIndex, int &backlastindex);
 
+		//возващает true, если успешно извлечение ближайшего целого числа result из строки str,
+		//начиная с индекса startIndex,
+		//передает индекс на котором остановился поиск
+		bool GData::GcodeData::getInt(String ^str, int &result, int startIndex, int &backlastindex);
+
+		//возващает true, если успешно извлечение ближайшего целого числа с плавающей точкой result
+		//из строки str, начиная с индекса startIndex,
+		//передает индекс на котором остановился поиск
+		bool GData::GcodeData::getFloat(String ^str, float &result, int startIndex, int &backlastindex);
 	};
 
 }
