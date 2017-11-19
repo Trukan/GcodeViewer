@@ -30,7 +30,6 @@ namespace GcodeViewer {
 			//TODO: добавьте код конструктора
 			//
 		}
-		cli::array<String^>^ getText(String^);
 	protected:
 		/// <summary>
 		/// Освободить все используемые ресурсы.
@@ -66,7 +65,6 @@ namespace GcodeViewer {
 	private:
 		String^ opndfileName = "";
 		String^ editCellText = "";
-		cli::array<String^>^ tText;
 		GcodeData^ gdata;
 		DataTable^ table;
 		System::Windows::Forms::BindingSource^ bindingSrc1;

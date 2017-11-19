@@ -13,24 +13,28 @@ namespace GData {
 		Kadr();
 
 		//сброс, используется при инициализации и в случае ошибочных данных
-		static	void reset();
+		static	void reset(bool full);
 
 		//функция транслирует строчные команды в указанной строке,
 		// в ломаную линию polyline, возвращает успешно ли преобразование
 		static	bool getPolyline(String ^ str, Polyline^ %pl);
-	private :
 
-		static	float x, y, z, i, j, k, f;
+
+	static	float x, y, z, i, j, k;
 	static	bool bg, bf,
 			bm, bs,
 			bx, by, bz,
 			bi, bj, bk,
-			fool;
+			fool;	//показывает, был ли полный сброс
 	static	int s;
-	static	GState g;
+	static GState curGstate;
+	static	Collections::Generic::List<GState>^ g;
+	static	Collections::Generic::List<float>^ f;
 	static	MState m;
 	static	NumberFormatInfo^ formatInfo;
 	static	Polyline^ polyline;
+
+	private:
 		//возвращает строку, содержащую первое число от символа заданной строки с заданным индексом,
 		//если такого числа нет, то возвращает System::String::Empty, если найдет две точки подряд то вернет nulptr
 		static	String^ getNumeric(String^, int startIndex, int &backlastindex);

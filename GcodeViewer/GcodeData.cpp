@@ -28,6 +28,7 @@ bool GcodeData::loadFile(String^ filepath)
 {
 	if (filepath == nullptr&&File::Exists(filepath))
 		return false;
+	Kadr::reset(true);
 	try {
 		commands->Clear();
 		StreamReader ^sr = gcnew StreamReader(filepath);
