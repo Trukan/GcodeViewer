@@ -1,4 +1,8 @@
 #pragma once
+#include "State.h"
+#include "Polyline.h"
+#include "Kadr.h"
+
 namespace GData {
 	using namespace System;
 	using namespace System::Collections;
@@ -7,54 +11,6 @@ namespace GData {
 	//	using namespace OpenTK;
 	//	using namespace OpenTK::Platform::Windows;
 	//	using namespace OpenTK::Graphics::OpenGL;
-
-		//перечисления состояний по основным и техническим модальным командам для проверки на последовательность
-		//и логику комманд
-	public enum class GState {
-		None = -1, NotLoad = 0, LineRun = 1, CircClockwise = 2, CircCntrClockwise = 3, NewNullCoor = 10,
-		SurfaceXY = 17, SurfaceZX = 18, SurfaceYZ = 19
-	};
-	public enum class Modal {
-		None = -1, PreStart = 0, StopNoReset = 2, StartRotateClockwise = 3, StartRotateCntrClockwise = 4,
-		StopRotate = 5, ChangeInsrtument = 6, StopWithReset = 30
-	};
-	//хранилище параметров команд одной строки
-	public ref struct kadr
-	{
-		kadr() {};
-		float x, y, z, i, j, k,f;
-		bool bx, by, bz, bi, bj, bk, bf, bs;
-		int s;
-		//notful reset exclude f,s
-		void reset() {
-			bx = false;
-			by = false;
-			bz = false;
-			bi = false;
-			bj = false;
-			bk = false;
-		}
-	};
-	//класс, предназначен для содержания координат точек ломаной неразрывной линии одного цвета (RGB)
-	public ref class Polyline sealed {
-	public:
-		Polyline(int _n);
-		Polyline(int _n, array<float>^ _x, array<float>^  _y, array<float>^  _z) :n(n), x(_x), y(_y), z(_z) {};
-		~Polyline()				//деструктор
-		{
-			delete x;
-			delete y;
-			delete z;
-		}
-		//	static bool    operator ==(const Polyline^, const Polyline^);
-		static Polyline^ operator /(Polyline^, float d);
-		int n;					//длина массивов
-		array<float>^ x;		//массивы координат
-		array<float>^ y;
-		array<float>^ z;
-		float red, green, blue;		//значения цвета в формате RGB 
-	//	Color color;
-	};
 
 	//класс данных, содержит коллекцию строк комманд, загружаемых из файла, 
 	//или написаных в таблице программы, содержит коллекцию ломаных линий и их данные
@@ -80,22 +36,6 @@ namespace GData {
 		// в ломаные линии некоторых цветов в коллекцию polyline
 		System::Collections::Generic::List<Polyline^>^ tranlate(System::Collections::Generic::List<String^>^ cmds);
 
-	private:
-		NumberFormatInfo^ formatInfo;
-
-		//возвращает строку, содержащую первое число от символа заданной строки с заданным индексом,
-		//если такого числа нет, то возвращает System::String::Empty, если найдет две точки подряд то вернет nulptr
-		String^ getNumeric(String^, int startIndex, int &backlastindex);
-
-		//возващает true, если успешно извлечение ближайшего целого числа result из строки str,
-		//начиная с индекса startIndex,
-		//передает индекс на котором остановился поиск
-		bool GData::GcodeData::getInt(String ^str, int &result, int startIndex, int &backlastindex);
-
-		//возващает true, если успешно извлечение ближайшего целого числа с плавающей точкой result
-		//из строки str, начиная с индекса startIndex,
-		//передает индекс на котором остановился поиск
-		bool GData::GcodeData::getFloat(String ^str, float &result, int startIndex, int &backlastindex);
 	};
 
 }

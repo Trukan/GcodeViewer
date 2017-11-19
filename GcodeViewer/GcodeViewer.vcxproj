@@ -144,18 +144,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GcodeData.cpp" />
+    <ClCompile Include="Kadr.cpp" />
     <ClCompile Include="MainForm.cpp" />
+    <ClCompile Include="Polyline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GcodeData.h" />
+    <ClInclude Include="Kadr.h" />
     <ClInclude Include="MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Polyline.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="State.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.h</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GcodeViewer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
