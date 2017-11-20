@@ -26,7 +26,7 @@ GcodeData::~GcodeData()
 //загрузка файла по filepath
 bool GcodeData::loadFile(String^ filepath)
 {
-	if (filepath == nullptr&&File::Exists(filepath))
+	if (filepath == nullptr||!File::Exists(filepath))
 		return false;
 	Kadr::reset(true);
 	try {

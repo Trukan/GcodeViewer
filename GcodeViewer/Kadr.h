@@ -26,7 +26,7 @@ namespace GData {
 			bx, by, bz,
 			bi, bj, bk,
 			fool;	//показывает, был ли полный сброс
-	static	int s;
+	static	int s=0;
 	static GState curGstate;
 	static	Collections::Generic::List<GState>^ g;
 	static	Collections::Generic::List<float>^ f;

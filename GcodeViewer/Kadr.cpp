@@ -13,7 +13,8 @@ Kadr::Kadr()
 void Kadr::reset(bool full) {
 	if (full) {
 		g = gcnew Collections::Generic::List<GState>(0);
-		f = gcnew Collections::Generic::List<float>(0);
+		f = gcnew Collections::Generic::List<float>(21);
+		for (int i = 0; i < 20; i++)	f->Add(0);
 		curGstate = GState::None;
 		formatInfo = gcnew NumberFormatInfo();
 		fool = true;
@@ -58,8 +59,8 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 				return false;
 			if (!g->Contains(safe_cast<GState>(paramInt))) {
 				g->Add(safe_cast<GState>(paramInt));
-				f->Insert(g->IndexOf(safe_cast<GState>(paramInt)),0);
-			//	f[g->IndexOf(safe_cast<GState>(paramInt))] = 0;
+				f[g->IndexOf(safe_cast<GState>(paramInt))] = 0;
+				//	f[g->IndexOf(safe_cast<GState>(paramInt))] = 0;
 			}
 			curGstate = safe_cast<GState>(paramInt);
 			bg = true;
@@ -127,7 +128,7 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 			return false;
 		}
 	}
-
+	//если нет параметров-координат в строке
 	if (!(bx || by || bz || bi || bj || bk)) {
 		if (bg)tpl->gstate = curGstate;
 		if (bm)tpl->mstate = m;
@@ -135,7 +136,43 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 		if (bf)tpl->feed = f[g->IndexOf(curGstate)];
 	}
 	else {
+		//при вводе координат, шпиндель должен уже вращаться,
+		//а текущий режим должен быть выбран, а подача при нем иметь значение больше нуля
+		if (m == MState::StartRotateClockwise) {
+			if ((curGstate == GState::NotLoad || curGstate == GState::LineRun || curGstate == GState::CircClockwise)
+				&& f[g->IndexOf(curGstate)] > 0) {
+				//проверим, все ли параметры на месте для Kруговой интерполяции (только для движения по часовой стрелке)
+				if (curGstate == GState::CircClockwise && ((bi&&bj&&bx&&by) || (bj&&bk&&by&&bz) || (bk&&bi&&bz&&bx))) {
 
+				}
+				else {
+
+
+					//проверим, все ли параметры на месте для Линейной интерполяции (только для движения по часовой стрелке)
+					if ((curGstate == GState::NotLoad || curGstate == GState::LineRun) && !(bi || bj || bk)) {
+
+					}
+					else {
+						if (curGstate == GState::CircClockwise) {
+							Console::WriteLine(" Wrong coor for Gstate:CircleInterpol " + str + ";");
+							return false;
+						}
+						if (curGstate == GState::NotLoad || curGstate == GState::LineRun) {
+							Console::WriteLine(" Wrong coor for Gstate:notload or linerun " + str + ";");
+							return false;
+						}
+					}
+				}
+			}
+			else {
+				Console::WriteLine(" need GState or Feedrate " + str + ":feedrate:"+ f[g->IndexOf(curGstate)]+"\n");
+				return false;
+			}
+		}
+		else {
+			Console::WriteLine(" Turn on M03 before " + str + ";");
+			return false;
+		}
 		//проверяется идентичность подачи, скорости вращения и режима движения текущей траектории
 		if (pl->feed != f[g->IndexOf(curGstate)] || pl->speedrate != s || pl->gstate != curGstate) {
 			tpl = gcnew Polyline(0);
@@ -154,11 +191,6 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 					if (by)	tpl->y->Insert(tpl->y->Count, y); else tpl->y->Insert(tpl->y->Count, tpl->y[tpl->y->Count - 1]);
 					if (bz)	tpl->z->Insert(tpl->z->Count, z); else tpl->z->Insert(tpl->z->Count, tpl->z[tpl->z->Count - 1]);
 				}
-			}
-			if (((bi&&bj) || (bj&&bk) || (bk&&bi)) && ((bx&&by) || (by&&bz) || (bz&&bx)) &&
-				(curGstate == GState::CircClockwise || curGstate == GState::CircCntrClockwise)) {
-			}
-			else {
 			}
 		}
 	}
@@ -288,11 +320,19 @@ bool Kadr::getFloat(String ^str, wchar_t param, int startIndex, int &backlastind
 		//параметр команды
 //	case 'P':	
 	case 'F':
-		if (curGstate != GState::None)
-			f[g->IndexOf(curGstate)] = result;
-		bf = true;
-		Console::Write("F" + f[g->IndexOf(curGstate)]);
-		break;
+		if (result > 0) {
+			if (curGstate != GState::None)
+				f[g->IndexOf(curGstate)] = result;
+			bf = true;
+			Console::Write("F" + f[g->IndexOf(curGstate)]);
+			break;
+		}
+		else {
+			Console::WriteLine("F.Error<=0");
+			Kadr::reset(false);
+			backlastindex = str->Length;
+			return false;
+		}
 		//частота вращения шпинделя
 
 		//case R:	//не используется в этой версии, параметр стандартного цикла или радиус
