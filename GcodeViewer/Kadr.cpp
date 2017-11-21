@@ -12,9 +12,8 @@ Kadr::Kadr()
 }
 void Kadr::reset(bool full) {
 	if (full) {
-		g = gcnew Collections::Generic::List<GState>(0);
-		f = gcnew Collections::Generic::List<float>(21);
-		for (int i = 0; i < 20; i++)	f->Add(0);
+		feedNoLoad = 2000;
+		feedrate = 0;
 		curGstate = GState::None;
 		formatInfo = gcnew NumberFormatInfo();
 		fool = true;
@@ -57,11 +56,6 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 		case 'G':
 			if (!getInt(str, paramInt, tmpindex, curindex))
 				return false;
-			if (!g->Contains(safe_cast<GState>(paramInt))) {
-				g->Add(safe_cast<GState>(paramInt));
-				f[g->IndexOf(safe_cast<GState>(paramInt))] = 0;
-				//	f[g->IndexOf(safe_cast<GState>(paramInt))] = 0;
-			}
 			curGstate = safe_cast<GState>(paramInt);
 			bg = true;
 			Console::Write("G" + paramInt);
@@ -128,19 +122,21 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 			return false;
 		}
 	}
+
 	//если нет параметров-координат в строке
 	if (!(bx || by || bz || bi || bj || bk)) {
 		if (bg)tpl->gstate = curGstate;
 		if (bm)tpl->mstate = m;
 		if (bs)tpl->speedrate = s;
-		if (bf)tpl->feed = f[g->IndexOf(curGstate)];
+		if (bf)tpl->feed = feedrate;
 	}
 	else {
 		//при вводе координат, шпиндель должен уже вращаться,
 		//а текущий режим должен быть выбран, а подача при нем иметь значение больше нуля
-		if (m == MState::StartRotateClockwise) {
+		//на холостом ходу может действовать подача по умолчанию
+		if (m == MState::StartRotateClockwise || curGstate == GState::NotLoad) {
 			if ((curGstate == GState::NotLoad || curGstate == GState::LineRun || curGstate == GState::CircClockwise)
-				&& f[g->IndexOf(curGstate)] > 0) {
+				&& (curGstate == GState::NotLoad || feedrate > 0)) {
 				//проверим, все ли параметры на месте для Kруговой интерполяции (только для движения по часовой стрелке)
 				if (curGstate == GState::CircClockwise && ((bi&&bj&&bx&&by) || (bj&&bk&&by&&bz) || (bk&&bi&&bz&&bx))) {
 
@@ -165,7 +161,7 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 				}
 			}
 			else {
-				Console::WriteLine(" need GState or Feedrate " + str + ":feedrate:"+ f[g->IndexOf(curGstate)]+"\n");
+				Console::WriteLine(" need GState or Feedrate " + str + ":feedrate:" + feedrate + "\n");
 				return false;
 			}
 		}
@@ -174,7 +170,7 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 			return false;
 		}
 		//проверяется идентичность подачи, скорости вращения и режима движения текущей траектории
-		if (pl->feed != f[g->IndexOf(curGstate)] || pl->speedrate != s || pl->gstate != curGstate) {
+		if (pl->feed != feedrate || pl->speedrate != s || pl->gstate != curGstate) {
 			tpl = gcnew Polyline(0);
 			//берем последнюю точку с предыдущей линии как начальную для новой
 	//		tpl->setLastPointAsFirst(pl);
@@ -182,7 +178,7 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 			tpl->gstate = curGstate;
 			if (bm)tpl->mstate = m;
 			if (bs)tpl->speedrate = s;
-			if (bf)tpl->feed = f[g->IndexOf(curGstate)];
+			if (bf)tpl->feed = feedrate;
 
 			//линейная интерполяция с проверкой 
 			if (!(bi&&bj&&bk) && (curGstate == GState::LineRun || curGstate == GState::LineRun)) {
@@ -204,7 +200,7 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 String ^ Kadr::getNumeric(String ^str, int startIndex, int &backlastindex)
 {
 	int start = startIndex, end = startIndex;
-	bool isdot = false;
+	bool wasdot = false;
 	while (start < str->Length && Kadr::isGoodLetter(str[start]))
 	{
 		start++;
@@ -214,14 +210,15 @@ String ^ Kadr::getNumeric(String ^str, int startIndex, int &backlastindex)
 	if (end < str->Length) {
 		end++;
 		//если наткнулись на точку, отметим это, что бы учесть дальше
-		if (str[start] == '.') isdot = true;
+		if (str[start] == '.') wasdot = true;
 	}
 	// (указатель end за пределами строки) И (символ по end не пробел) И 
 	// И ( символ является цифрой ИЛИ ( (  символ является точкой ) ИСКЛЮЧАЮЩЕЕ_ИЛИ число в целом уже начиналось с точки) )
 	//последняя проверка для определения двух точек в числе
-	while (end < str->Length && !Char::IsWhiteSpace(str[end]) && !(str[end] == 'Y') && !(str[end] == 'Z')
-		&& !(str[end] == 'F') && !(str[end] == 'S') && (((str[end] == '.') ^ isdot) || Char::IsDigit(str[end]))) {
-		if (str[end] == '.') isdot = true;
+	while (end < str->Length && (((str[end] == '.') && (!wasdot)) ^ Kadr::isGoodNumber(str[end]))) {
+		//while (end < str->Length && !Char::IsWhiteSpace(str[end]) && !(str[end] == 'Y') && !(str[end] == 'Z')
+		//	&& !(str[end] == 'F') && !(str[end] == 'S') && (((str[end] == '.') ^ wasdot) || Char::IsDigit(str[end]))) {
+		if (str[end] == '.') wasdot = true;
 		end++;
 	}
 
@@ -322,9 +319,9 @@ bool Kadr::getFloat(String ^str, wchar_t param, int startIndex, int &backlastind
 	case 'F':
 		if (result > 0) {
 			if (curGstate != GState::None)
-				f[g->IndexOf(curGstate)] = result;
+				feedrate = result;
 			bf = true;
-			Console::Write("F" + f[g->IndexOf(curGstate)]);
+			Console::Write("F" + feedrate);
 			break;
 		}
 		else {
@@ -366,19 +363,24 @@ bool Kadr::getFloat(String ^str, wchar_t param, int startIndex, int &backlastind
 }
 
 bool GData::Kadr::isGoodLetter(wchar_t ch)
-{
+{	// :88-X;:89-Y;:90-Z;:73-I;:74-J;:75-K;:71-G;:77-M;:70-F;:83-S;:45--;:46-.;
 	bool res = (
 		(ch == 'X') ||
 		(ch == 'Y') ||
 		(ch == 'Z') ||
-		(ch == 'I') ||
-		(ch == 'J') ||
-		(ch == 'K') ||
+		(ch == 'I') ||	// (safe_cast<Int16>(ch) == 73) ||
+		(ch == 'J') ||	// (safe_cast<Int16>(ch) == 74) ||
+		(ch == 'K') ||	// (safe_cast<Int16>(ch) == 75) ||
 		(ch == 'F') ||
 		(ch == 'S') ||
 		(ch == 'M') ||
 		(ch == 'G') ||
 		(ch == 'T'));
+	//bool res = ((ch == 'Y') || Char::IsLetter(ch)) && !(ch == '.');
+	return res;
+}
+bool Kadr::isGoodNumber(wchar_t ch) {
+	bool res = ((safe_cast<Int16>(ch) >= 48) && (safe_cast<Int16>(ch) <= 57)) || (safe_cast<Int16>(ch) == 45);
 	//bool res = ((ch == 'Y') || Char::IsLetter(ch)) && !(ch == '.');
 	return res;
 }

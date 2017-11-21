@@ -20,19 +20,19 @@ namespace GData {
 		static	bool getPolyline(String ^ str, Polyline^ %pl);
 
 
-	static	float x, y, z, i, j, k;
-	static	bool bg, bf,
+		static	float x, y, z, i, j, k;
+		static	bool bg, bf,
 			bm, bs,
 			bx, by, bz,
 			bi, bj, bk,
 			fool;	//показывает, был ли полный сброс
-	static	int s=0;
-	static GState curGstate;
-	static	Collections::Generic::List<GState>^ g;
-	static	Collections::Generic::List<float>^ f;
-	static	MState m;
-	static	NumberFormatInfo^ formatInfo;
-	static	Polyline^ polyline;
+		static	int s = 0;
+		static GState curGstate;
+		static	float feedrate;
+		static	float feedNoLoad;
+		static	MState m;
+		static	NumberFormatInfo^ formatInfo;
+		static	Polyline^ polyline;
 
 	private:
 		//возвращает строку, содержащую первое число от символа заданной строки с заданным индексом,
@@ -48,6 +48,8 @@ namespace GData {
 		//указанного символьного параметра param из строки str, начиная с индекса startIndex,
 		//передает индекс на котором остановился поиск
 		static	bool getFloat(String ^str, wchar_t param, int startIndex, int &backlastindex);
+
+		static	bool isGoodNumber(wchar_t ch);
 
 		static	bool isGoodLetter(wchar_t);
 	};
