@@ -58,8 +58,8 @@ Generic::List<Polyline^>^ GData::GcodeData::tranlate(System::Collections::Generi
 	if (cmds == nullptr || cmds->Count < 1)
 		return nullptr;
 	//модальные состояния (сквозные)
-	GData::GState gstate = GState::None;
-	GData::MState mstate = MState::None;
+//	GData::GState gstate = GState::None;
+//	GData::MState mstate = MState::None;
 	//состояние строки
 	GData::Kadr^ kstate = gcnew Kadr();
 	System::Collections::Generic::List<Polyline^>^ lines;
@@ -69,10 +69,8 @@ Generic::List<Polyline^>^ GData::GcodeData::tranlate(System::Collections::Generi
 
 		String^ str = gcnew String(cmds[i]);
 		Polyline^ line = gcnew Polyline(0);
-		if (!Kadr::getPolyline(str, line)) {
+		if (!Kadr::getPolyline(str, line)){
 			errorRows->Add(i);
-			i++;
-			continue;
 		}
 		i++;
 	}

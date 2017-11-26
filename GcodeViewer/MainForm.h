@@ -63,6 +63,19 @@ namespace GcodeViewer {
 
 
 	private:
+		bool glLoaded = false;
+		Matrix4 modelview;
+		int w = 9;
+		float multiplyEye = 1.175f;
+		float eyeX = 300, eyeY = -400, eyeZ = 500;
+		float  targetX = 0, targetY = 0, targetZ = 0;
+		float upX = 0, upY = 0, upZ = 24;
+		double rXY, rXYZ, pi = Math::Acos(-1.0);
+		bool mdown = false;	//кнопка мыши нажата
+		int mdX, mdY;		//координаты нажатой мыши
+		int mX, mY;			//текущие координаты мыши
+		double startAngG = 2.5, startAngV = pi / 4; //стартовый угол обзора
+		double angleG = 0, angleV = 0;//угол для поворота обзора от нажатой мыши, горизонтальный и вертикальный
 		String^ opndfileName = "";
 		String^ editCellText = "";
 		GcodeData^ gdata;
@@ -84,10 +97,10 @@ namespace GcodeViewer {
 		{
 			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MainForm::typeid));
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle3 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle4 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle5 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle6 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle7 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle8 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			this->glControl1 = (gcnew OpenTK::GLControl());
 			this->toolStrip1 = (gcnew System::Windows::Forms::ToolStrip());
 			this->toolStripDropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
@@ -117,8 +130,14 @@ namespace GcodeViewer {
 			this->glControl1->Name = L"glControl1";
 			this->glControl1->Size = System::Drawing::Size(643, 547);
 			this->glControl1->TabIndex = 0;
-			this->glControl1->VSync = true;
+			this->glControl1->VSync = false;
 			this->glControl1->AutoSizeChanged += gcnew System::EventHandler(this, &MainForm::MainForm_Resize);
+			this->glControl1->Load += gcnew System::EventHandler(this, &MainForm::glControl1_Load);
+			this->glControl1->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MainForm::glControl1_Paint);
+			this->glControl1->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &MainForm::glControl1_MouseDown);
+			this->glControl1->MouseMove += gcnew System::Windows::Forms::MouseEventHandler(this, &MainForm::glControl1_MouseMove);
+			this->glControl1->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &MainForm::glControl1_MouseUp);
+			this->glControl1->MouseWheel += gcnew System::Windows::Forms::MouseEventHandler(this, &MainForm::glControl1_MouseWheel);
 			// 
 			// toolStrip1
 			// 
@@ -191,6 +210,11 @@ namespace GcodeViewer {
 			// 
 			this->saveFileDialog1->Filter = L"G-code arcs Files (*.tap)|*.tap|All Files (*.*)|*.*";
 			// 
+			// timer1
+			// 
+			this->timer1->Enabled = true;
+			this->timer1->Tick += gcnew System::EventHandler(this, &MainForm::timer1_Tick);
+			// 
 			// statusStrip1
 			// 
 			this->statusStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->toolStripStatusLabel1 });
@@ -218,27 +242,27 @@ namespace GcodeViewer {
 			this->dataGridView1->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
 			this->dataGridView1->ClipboardCopyMode = System::Windows::Forms::DataGridViewClipboardCopyMode::EnableWithoutHeaderText;
 			this->dataGridView1->ColumnHeadersBorderStyle = System::Windows::Forms::DataGridViewHeaderBorderStyle::Single;
-			dataGridViewCellStyle1->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+			dataGridViewCellStyle5->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle5->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
-			dataGridViewCellStyle1->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle1->SelectionBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
-			dataGridViewCellStyle1->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dataGridView1->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle5->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle5->SelectionBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
+			dataGridViewCellStyle5->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle5->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dataGridView1->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
 			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::DisableResizing;
 			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(1) { this->Column1 });
 			this->dataGridView1->Cursor = System::Windows::Forms::Cursors::Arrow;
-			dataGridViewCellStyle2->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle2->BackColor = System::Drawing::SystemColors::Window;
-			dataGridViewCellStyle2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+			dataGridViewCellStyle6->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Window;
+			dataGridViewCellStyle6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
-			dataGridViewCellStyle2->ForeColor = System::Drawing::SystemColors::ControlText;
-			dataGridViewCellStyle2->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
-			dataGridViewCellStyle2->SelectionForeColor = System::Drawing::Color::Black;
-			dataGridViewCellStyle2->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
-			this->dataGridView1->DefaultCellStyle = dataGridViewCellStyle2;
+			dataGridViewCellStyle6->ForeColor = System::Drawing::SystemColors::ControlText;
+			dataGridViewCellStyle6->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
+			dataGridViewCellStyle6->SelectionForeColor = System::Drawing::Color::Black;
+			dataGridViewCellStyle6->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
+			this->dataGridView1->DefaultCellStyle = dataGridViewCellStyle6;
 			this->dataGridView1->EditMode = System::Windows::Forms::DataGridViewEditMode::EditOnKeystroke;
 			this->dataGridView1->EnableHeadersVisualStyles = false;
 			this->dataGridView1->GridColor = System::Drawing::SystemColors::ButtonShadow;
@@ -247,23 +271,23 @@ namespace GcodeViewer {
 			this->dataGridView1->Margin = System::Windows::Forms::Padding(1, 1, 1, 0);
 			this->dataGridView1->MinimumSize = System::Drawing::Size(0, 100);
 			this->dataGridView1->Name = L"dataGridView1";
-			dataGridViewCellStyle3->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle3->BackColor = System::Drawing::SystemColors::ScrollBar;
-			dataGridViewCellStyle3->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle7->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle7->BackColor = System::Drawing::SystemColors::ScrollBar;
+			dataGridViewCellStyle7->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			dataGridViewCellStyle3->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle3->Format = L"N0";
-			dataGridViewCellStyle3->NullValue = nullptr;
-			dataGridViewCellStyle3->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
-			dataGridViewCellStyle3->SelectionForeColor = System::Drawing::SystemColors::Desktop;
-			dataGridViewCellStyle3->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dataGridView1->RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+			dataGridViewCellStyle7->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle7->Format = L"N0";
+			dataGridViewCellStyle7->NullValue = nullptr;
+			dataGridViewCellStyle7->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
+			dataGridViewCellStyle7->SelectionForeColor = System::Drawing::SystemColors::Desktop;
+			dataGridViewCellStyle7->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dataGridView1->RowHeadersDefaultCellStyle = dataGridViewCellStyle7;
 			this->dataGridView1->RowHeadersWidth = 75;
 			this->dataGridView1->RowHeadersWidthSizeMode = System::Windows::Forms::DataGridViewRowHeadersWidthSizeMode::DisableResizing;
-			dataGridViewCellStyle4->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle8->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle8->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle4;
+			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle8;
 			this->dataGridView1->RowTemplate->DefaultCellStyle->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
 			this->dataGridView1->RowTemplate->ErrorText = L"00000";
@@ -277,15 +301,14 @@ namespace GcodeViewer {
 			this->dataGridView1->CellLeave += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MainForm::dataGridView1_CellLeave);
 			this->dataGridView1->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MainForm::dataGridView1_KeyDown);
 			this->dataGridView1->PreviewKeyDown += gcnew System::Windows::Forms::PreviewKeyDownEventHandler(this, &MainForm::dataGridView1_PreviewKeyDown);
-		//		 this->dataGridView1->AutoGenerateColumns = true;
-				 // 
-				 // Column1
-				 // 
-			this->Column1->DataPropertyName = "commands";
+			// 
+			// Column1
+			// 
+			this->Column1->DataPropertyName = L"commands";
 			this->Column1->DividerWidth = 2;
 			this->Column1->FillWeight = 256;
 			this->Column1->Frozen = true;
-			this->Column1->HeaderText = "Команды";
+			this->Column1->HeaderText = L"Команды";
 			this->Column1->MinimumWidth = 256;
 			this->Column1->Name = L"Column1";
 			this->Column1->Resizable = System::Windows::Forms::DataGridViewTriState::False;
@@ -313,6 +336,7 @@ namespace GcodeViewer {
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
+
 		}
 #pragma endregion
 		//обработка нажатия кнопки меню "Сохранить как"
@@ -331,24 +355,23 @@ namespace GcodeViewer {
 			if (gdata->loadFile(opndfileName)) {
 				this->textUnderMenu->Text = " открыт:" + opndfileName;
 				this->dataGridView1->Rows->Clear();
-		//		this->table->
-		//		this->dataGridView1->DataSource = gdata->commands;
-				
-						this->dataGridView1->RowCount = gdata->commands->Count;
-				//		this->dataGridView1->Rows-> = gdata->commands;
-						int rowNumber = 1;
-						System::Collections::IEnumerator^ myEnum = safe_cast<System::Collections::IEnumerable^>(dataGridView1->Rows)->GetEnumerator();
-						myEnum->Reset();
-						while (myEnum->MoveNext())
-						{
-							DataGridViewRow^ row = safe_cast<DataGridViewRow^>(myEnum->Current);
-							row->HeaderCell->Value = String::Format(L"{0}", rowNumber);
-							row->SetValues(gdata->commands[rowNumber - 1]);
-							if (rowNumber >= gdata->commands->Count)
-								break;
-							rowNumber = rowNumber + 1;
-						}
-			
+				//		this->table->
+				//		this->dataGridView1->DataSource = gdata->commands;
+
+				this->dataGridView1->RowCount = gdata->commands->Count;
+				int rowNumber = 1;
+				System::Collections::IEnumerator^ myEnum = safe_cast<System::Collections::IEnumerable^>(dataGridView1->Rows)->GetEnumerator();
+				myEnum->Reset();
+				while (myEnum->MoveNext())
+				{
+					DataGridViewRow^ row = safe_cast<DataGridViewRow^>(myEnum->Current);
+					row->HeaderCell->Value = String::Format(L"{0}", rowNumber);
+					row->SetValues(gdata->commands[rowNumber - 1]);
+					if (rowNumber >= gdata->commands->Count)
+						break;
+					rowNumber = rowNumber + 1;
+				}
+
 			}
 			else {
 				this->textUnderMenu->Text = "не открытся" + opndfileName;
@@ -377,14 +400,15 @@ namespace GcodeViewer {
 			this->dataGridView1->CurrentCell->ColumnIndex +
 			"BeginEdit:" + this->dataGridView1->BeginEdit(true);
 	}
-			 //обработка события CellLeave
+			 //обработка события CellLeave для строки таблицы
 	private: System::Void dataGridView1_CellLeave(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
 		this->dataGridView1->EndEdit();
 	}
+			 //обработка события нажатия Любой кнопки по таблице
 	private: System::Void dataGridView1_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
 
 	}
-
+			 //обработка события нажатия Любой кнопки по таблице
 	private: System::Void dataGridView1_PreviewKeyDown(System::Object^  sender, System::Windows::Forms::PreviewKeyDownEventArgs^  e) {
 		if (this->dataGridView1->SelectedCells->Count != 0) {
 			switch (e->KeyCode) {
@@ -404,5 +428,147 @@ namespace GcodeViewer {
 			}
 		}
 	}
+
+			 //обработка прокрутки колеса мыши по компоненту Control1
+	private: System::Void glControl1_MouseWheel(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+
+		if (e->Delta > 0)
+			//от себя
+		{
+			eyeX = eyeX*multiplyEye;
+			eyeY = eyeY*multiplyEye;
+			eyeZ = eyeZ*multiplyEye;
+
+		}
+		else
+			// на себя
+		{
+			eyeX = eyeX / multiplyEye;
+			eyeY = eyeY / multiplyEye;
+			eyeZ = eyeZ / multiplyEye;
+		}
+		changeModelView();
+
+	}
+			 //обработка тика таймера
+	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
+		//	GL::MatrixMode(MatrixMode::Projection); //работаем с трехмерной проекцией
+		//	GL::LoadIdentity(); //сброс в единичную матрицу
+		//	GL::Ortho(-1, 1, -1, 1, -1, 1); //Указываем систему координат
+		//	GL::Viewport(0,0,glControl1->Width,glControl1->Height);	//указываем размер области в которой рисуем
+		//	GL::Clear(ClearBufferMask::ColorBufferBit|ClearBufferMask::DepthBufferBit);
+		//	GL::MatrixMode(MatrixMode::Projection); //работаем с трехмерной проекцией
+		//	GL::LoadIdentity(); //сброс в единичную матрицу
+			//Матрица отвечающая за фруструм
+		//	Matrix4 perspective = Matrix4::CreatePerspectiveFieldOfView(0.5f, glControl1->Width/glControl1->Height,1,100);
+		//	GL::LoadMatrix(perspective);
+		//	GL::ClearColor(Color::WhiteSmoke); //указываем цвет фона
+		glControl1->Invalidate();
+	}
+	private: System::Void glControl1_Load(System::Object^  sender, System::EventArgs^  e) {
+		glLoaded = true;
+		GL::ClearColor(Color::WhiteSmoke);
+		GL::Enable(EnableCap::DepthTest);
+
+		GL::MatrixMode(MatrixMode::Projection); //работаем с трехмерной проекцией
+		GL::Ortho(-1, 1, -1, 1, -1, 1); //Указываем систему координат
+
+		//Матрица отвечающая за фруструм
+		Matrix4 perspective = Matrix4::CreatePerspectiveFieldOfView((float)(90 * Math::Asin(1.0f) / 90), (float)glControl1->Width / glControl1->Height, (float)0.05, (float)2000);
+		GL::LoadMatrix(perspective);
+		GL::ClearColor(Color::WhiteSmoke); //указываем цвет фона
+		//Здесь мы задаем нашу камеру в точке(30, 70, 80), 
+		//направление взгляда в центр системы координта(0, 0, 0).
+		//Ориентация такая, что ось OZ направлена вверх.
+		changeModelView();
+	}
+			 //обработка события перерисовки, происходит по необходимости, изменении размеров окна и прочее
+	private: System::Void glControl1_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) {
+		if (!glLoaded)
+			return;
+		GL::Clear(ClearBufferMask::ColorBufferBit | ClearBufferMask::DepthBufferBit);
+		//рисуем обозначение системы координат
+		GL::Color3(Color::Gray); //цвет, которым будем рисовать
+		GL::Begin(PrimitiveType::Lines); //Что будем рисовать: линии
+		GL::Vertex3(w, 0, 0); GL::Vertex3(w, w, 0);
+		GL::Vertex3(w, w, 0); GL::Vertex3(0, w, 0);
+		GL::Vertex3(w, w, 0); GL::Vertex3(w, w, w);
+		GL::Vertex3(0, w, 0); GL::Vertex3(0, w, w);
+		GL::Vertex3(0, w, w); GL::Vertex3(0, 0, w);
+		GL::Vertex3(0, w, w); GL::Vertex3(w, w, w);
+		GL::Vertex3(0, 0, w); GL::Vertex3(w, 0, w);
+		GL::Vertex3(w, 0, w); GL::Vertex3(w, 0, 0);
+		GL::Vertex3(w, 0, w); GL::Vertex3(w, w, w);
+		GL::End();
+		GL::LineWidth(2.0f);
+		//OX
+		GL::Color3(Color::Green); //цвет, которым будем рисовать
+		GL::Begin(PrimitiveType::Lines); //Что будем рисовать: линии
+		GL::Vertex3(0, 0, 0);GL::Vertex3(30, 0, 0);
+		GL::End();
+		//OY
+		GL::Color3(Color::Blue);
+		GL::Begin(PrimitiveType::Lines);
+		GL::Vertex3(0, 0, 0);GL::Vertex3(0, 30, 0);
+		GL::End();
+		//OZ
+		GL::Color3(Color::Red);
+		GL::Begin(PrimitiveType::Lines);
+		GL::Vertex3(0, 0, 0);GL::Vertex3(0, 0, 30);
+		GL::End();
+		glControl1->SwapBuffers();
+	}
+
+			 //обработка перемещения мыши по компоненту Control1
+	private: System::Void glControl1_MouseMove(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+		mX = e->X;
+		mY = e->Y;
+		if (mdown) {
+
+			angleG = ((double)(mX - mdX))*pi / (glControl1->Width);
+			angleV = ((double)(mY - mdY))*pi / (glControl1->Height);
+			rotateG(angleG);
+			rotateV(angleV);
+			//		eyeX = (float)(rXY*Math::Sin(Math::Asin(eyeX / rXY) + angleG));
+		//			eyeY = (float)(rXY*Math::Cos(Math::Acos(eyeY / rXY) + angleG));
+			changeModelView();
+			mdX = mX;
+			mdY = mY;
+		}
+	}
+			 //кнопка мыши нажата
+	private: System::Void glControl1_MouseDown(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+		if (!mdown) {
+			mdX = e->X;
+			mdY = e->Y;
+			//		angleG = Math::sin
+		}
+		mdown = true;
+	}
+			 //кнопка мыши отжата
+	private: System::Void glControl1_MouseUp(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+		mdown = false;
+
+	}
+			 void changeModelView() {
+				 modelview = Matrix4::LookAt(eyeX, eyeY, eyeZ, targetX, targetY, targetZ, upX, upY, upZ);
+				 GL::MatrixMode(MatrixMode::Modelview);
+				 GL::LoadMatrix(modelview);
+			 }
+			 void  rotateG(double U) {
+				 rXY = Math::Sqrt((Math::Pow(eyeX, 2) + Math::Pow(eyeY, 2)));
+				 startAngG = startAngG + U;
+				 eyeX = (float)(rXY*Math::Sin(startAngG));
+				 eyeY = (float)(rXY*Math::Cos(startAngG));
+			 }
+			 void  rotateV(double U) {
+				 rXY = Math::Sqrt((Math::Pow(eyeX, 2) + Math::Pow(eyeY, 2)));
+				 rXYZ = Math::Sqrt((Math::Pow(eyeX, 2) + Math::Pow(eyeY, 2) + Math::Pow(eyeZ, 2)));
+				 startAngV = startAngV + U;
+				 eyeX = (float)(eyeX*rXYZ*Math::Cos(startAngV) / rXY);
+				 eyeY = (float)(eyeY*rXYZ*Math::Cos(startAngV) / rXY);
+				 eyeZ = (float)(rXYZ*Math::Sin(startAngV));
+
+			 }
 	};
 }
