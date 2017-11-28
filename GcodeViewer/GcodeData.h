@@ -19,7 +19,7 @@ namespace GData {
 	public:
 		System::Collections::Generic::List<Int32>^ errorRows;
 		System::Collections::Generic::List<String^>^ commands;
-		System::Collections::Generic::List<Polyline^>^ polyline;
+		System::Collections::Generic::List<Polyline^>^ polylines;
 
 		GcodeData();
 		~GcodeData();
@@ -33,7 +33,7 @@ namespace GData {
 		bool loadFile(String^ filepath);
 
 		//функция транслирующая строчные команды коллекции в траекторию, 
-		// в ломаные линии некоторых цветов в коллекцию polyline
+		// в ломаные линии некоторых цветов в коллекцию polylines
 		System::Collections::Generic::List<Polyline^>^ tranlate(System::Collections::Generic::List<String^>^ cmds);
 
 	};

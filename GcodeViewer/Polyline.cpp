@@ -15,7 +15,7 @@ bool GData::Polyline::update()
 {
 	return false;
 }
-
+/*
 //берем последнюю точку с заданной линии как начальную для новой
 //основные состояния так же копируются
 bool GData::Polyline::setLastPointAsFirst(Polyline^ pl)
@@ -33,7 +33,7 @@ bool GData::Polyline::setLastPointAsFirst(Polyline^ pl)
 	Console::WriteLine("plUpdateFalse");
 	return false;
 }
-
+*/
 //оператор деления, делит координаты на конкретное число, 
 //Возвращает измененный экземпляр переданого параметра
 Polyline ^ GData::Polyline::operator/(Polyline ^ p, float d)

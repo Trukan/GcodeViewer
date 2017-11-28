@@ -42,7 +42,7 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 
 	//подготовка, обнуление
 	reset(false);
-	Polyline^ tpl = gcnew Polyline(0);
+	Polyline^ tpl = gcnew Polyline(1);
 	int paramInt = 0;
 	int curindex = 0, tmpindex = 0;
 
@@ -123,16 +123,18 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 		}
 	}
 
+	//заводим модульные и режимные состояния
+	if (bg)tpl->gstate = curGstate;
+	if (bm)tpl->mstate = m;
+	if (bs)tpl->speedrate = s;
+	if (bf)tpl->feed = feedrate;
 	//если нет параметров-координат в строке
 	if (!(bx || by || bz || bi || bj || bk)) {
-		if (bg)tpl->gstate = curGstate;
-		if (bm)tpl->mstate = m;
-		if (bs)tpl->speedrate = s;
-		if (bf)tpl->feed = feedrate;
+		
 	}
 	else {
 		//при вводе координат, шпиндель должен уже вращаться,
-		//а текущий режим должен быть выбран, а подача при нем иметь значение больше нуля
+		//а текущий режим должен быть выбран, подача при нем должна иметь значение больше нуля
 		//на холостом ходу может действовать подача по умолчанию
 		if (m == MState::StartRotateClockwise || curGstate == GState::NotLoad) {
 			if ((curGstate == GState::NotLoad || curGstate == GState::LineRun || curGstate == GState::CircClockwise)
@@ -144,9 +146,19 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 				else {
 
 
-					//проверим, все ли параметры на месте для Линейной интерполяции (только для движения по часовой стрелке)
+					//проверим, все ли параметры на месте для Линейной интерполяции
 					if ((curGstate == GState::NotLoad || curGstate == GState::LineRun) && !(bi || bj || bk)) {
+						if (bx)tpl->x[0] = Kadr::x;
+						if (by)tpl->y[0] = Kadr::y;
+						if (bz)tpl->z[0] = Kadr::z;
+						if (curGstate == GState::NotLoad) {
+							tpl->red = 255;
+							tpl->blue = 0;
+							tpl->green = 0;
+						}
+						else {
 
+						}
 					}
 					else {
 						if (curGstate == GState::CircClockwise) {
@@ -169,26 +181,8 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 			Console::WriteLine(" Turn on M03 before " + str + ";");
 			return false;
 		}
-		//проверяется идентичность подачи, скорости вращения и режима движения текущей траектории
-		if (pl->feed != feedrate || pl->speedrate != s || pl->gstate != curGstate) {
-			tpl = gcnew Polyline(0);
-			//берем последнюю точку с предыдущей линии как начальную для новой
-	//		tpl->setLastPointAsFirst(pl);
-			//устанавливаем текущие параметры
-			tpl->gstate = curGstate;
-			if (bm)tpl->mstate = m;
-			if (bs)tpl->speedrate = s;
-			if (bf)tpl->feed = feedrate;
-
-			//линейная интерполяция с проверкой 
-			if (!(bi&&bj&&bk) && (curGstate == GState::LineRun || curGstate == GState::LineRun)) {
-				if (bx&&by&&bz) {
-					if (bx)	tpl->x->Insert(tpl->x->Count, x); else tpl->x->Insert(tpl->x->Count, tpl->x[tpl->x->Count - 1]);
-					if (by)	tpl->y->Insert(tpl->y->Count, y); else tpl->y->Insert(tpl->y->Count, tpl->y[tpl->y->Count - 1]);
-					if (bz)	tpl->z->Insert(tpl->z->Count, z); else tpl->z->Insert(tpl->z->Count, tpl->z[tpl->z->Count - 1]);
-				}
-			}
-		}
+		//здесь будет определение цвета линии по величине подачи, и скорости вращения
+		//или не будет
 	}
 
 	return true;

@@ -11,6 +11,7 @@ namespace GData {
 	public ref class Polyline sealed {
 	public:
 		Polyline(int _n);
+		//указывая начальную емкость массивов, инициализирует их
 		Polyline(int _n,
 			Collections::Generic::List<float>^ _x,
 			Collections::Generic::List<float>^  _y,
@@ -30,10 +31,10 @@ namespace GData {
 		Collections::Generic::List<float>^ x;		//массивы координат
 		Collections::Generic::List<float>^ y;
 		Collections::Generic::List<float>^ z;
-		float red, green, blue;		//значения цвета в формате RGB 
+		int red, green, blue;		//значения цвета в формате RGB 
 
 		bool update();
-		bool setLastPointAsFirst(Polyline^);
+	//	bool setLastPointAsFirst(Polyline^);
 
 		//	static bool    operator ==(const Polyline^, const Polyline^);
 		static Polyline^ operator /(Polyline^, float d);

@@ -97,10 +97,10 @@ namespace GcodeViewer {
 		{
 			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MainForm::typeid));
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle5 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle6 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle7 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle8 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle3 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle4 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			this->glControl1 = (gcnew OpenTK::GLControl());
 			this->toolStrip1 = (gcnew System::Windows::Forms::ToolStrip());
 			this->toolStripDropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
@@ -133,6 +133,7 @@ namespace GcodeViewer {
 			this->glControl1->VSync = false;
 			this->glControl1->AutoSizeChanged += gcnew System::EventHandler(this, &MainForm::MainForm_Resize);
 			this->glControl1->Load += gcnew System::EventHandler(this, &MainForm::glControl1_Load);
+			this->glControl1->SizeChanged += gcnew System::EventHandler(this, &MainForm::glControl1_SizeChanged);
 			this->glControl1->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MainForm::glControl1_Paint);
 			this->glControl1->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &MainForm::glControl1_MouseDown);
 			this->glControl1->MouseMove += gcnew System::Windows::Forms::MouseEventHandler(this, &MainForm::glControl1_MouseMove);
@@ -213,6 +214,7 @@ namespace GcodeViewer {
 			// timer1
 			// 
 			this->timer1->Enabled = true;
+			this->timer1->Interval = 10;
 			this->timer1->Tick += gcnew System::EventHandler(this, &MainForm::timer1_Tick);
 			// 
 			// statusStrip1
@@ -242,27 +244,27 @@ namespace GcodeViewer {
 			this->dataGridView1->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
 			this->dataGridView1->ClipboardCopyMode = System::Windows::Forms::DataGridViewClipboardCopyMode::EnableWithoutHeaderText;
 			this->dataGridView1->ColumnHeadersBorderStyle = System::Windows::Forms::DataGridViewHeaderBorderStyle::Single;
-			dataGridViewCellStyle5->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle5->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+			dataGridViewCellStyle1->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
-			dataGridViewCellStyle5->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle5->SelectionBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
-			dataGridViewCellStyle5->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle5->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dataGridView1->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+			dataGridViewCellStyle1->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle1->SelectionBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
+			dataGridViewCellStyle1->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dataGridView1->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
 			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::DisableResizing;
 			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(1) { this->Column1 });
 			this->dataGridView1->Cursor = System::Windows::Forms::Cursors::Arrow;
-			dataGridViewCellStyle6->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Window;
-			dataGridViewCellStyle6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+			dataGridViewCellStyle2->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle2->BackColor = System::Drawing::SystemColors::Window;
+			dataGridViewCellStyle2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
-			dataGridViewCellStyle6->ForeColor = System::Drawing::SystemColors::ControlText;
-			dataGridViewCellStyle6->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
-			dataGridViewCellStyle6->SelectionForeColor = System::Drawing::Color::Black;
-			dataGridViewCellStyle6->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
-			this->dataGridView1->DefaultCellStyle = dataGridViewCellStyle6;
+			dataGridViewCellStyle2->ForeColor = System::Drawing::SystemColors::ControlText;
+			dataGridViewCellStyle2->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
+			dataGridViewCellStyle2->SelectionForeColor = System::Drawing::Color::Black;
+			dataGridViewCellStyle2->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
+			this->dataGridView1->DefaultCellStyle = dataGridViewCellStyle2;
 			this->dataGridView1->EditMode = System::Windows::Forms::DataGridViewEditMode::EditOnKeystroke;
 			this->dataGridView1->EnableHeadersVisualStyles = false;
 			this->dataGridView1->GridColor = System::Drawing::SystemColors::ButtonShadow;
@@ -271,23 +273,23 @@ namespace GcodeViewer {
 			this->dataGridView1->Margin = System::Windows::Forms::Padding(1, 1, 1, 0);
 			this->dataGridView1->MinimumSize = System::Drawing::Size(0, 100);
 			this->dataGridView1->Name = L"dataGridView1";
-			dataGridViewCellStyle7->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle7->BackColor = System::Drawing::SystemColors::ScrollBar;
-			dataGridViewCellStyle7->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle3->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle3->BackColor = System::Drawing::SystemColors::ScrollBar;
+			dataGridViewCellStyle3->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			dataGridViewCellStyle7->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle7->Format = L"N0";
-			dataGridViewCellStyle7->NullValue = nullptr;
-			dataGridViewCellStyle7->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
-			dataGridViewCellStyle7->SelectionForeColor = System::Drawing::SystemColors::Desktop;
-			dataGridViewCellStyle7->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dataGridView1->RowHeadersDefaultCellStyle = dataGridViewCellStyle7;
+			dataGridViewCellStyle3->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle3->Format = L"N0";
+			dataGridViewCellStyle3->NullValue = nullptr;
+			dataGridViewCellStyle3->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
+			dataGridViewCellStyle3->SelectionForeColor = System::Drawing::SystemColors::Desktop;
+			dataGridViewCellStyle3->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dataGridView1->RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
 			this->dataGridView1->RowHeadersWidth = 75;
 			this->dataGridView1->RowHeadersWidthSizeMode = System::Windows::Forms::DataGridViewRowHeadersWidthSizeMode::DisableResizing;
-			dataGridViewCellStyle8->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle8->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle4->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle8;
+			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle4;
 			this->dataGridView1->RowTemplate->DefaultCellStyle->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
 			this->dataGridView1->RowTemplate->ErrorText = L"00000";
@@ -343,7 +345,7 @@ namespace GcodeViewer {
 	private: System::Void сохранитьКакToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 		this->saveFileDialog1->FileName = opndfileName;
 		if (System::Windows::Forms::DialogResult::OK == this->saveFileDialog1->ShowDialog())
-			this->textUnderMenu->Text = this->saveFileDialog1->FileName + " сохранен";
+			this->textUnderMenu->Text = this->saveFileDialog1->FileName + " типа сохранен";
 		else
 			this->Text = L"GcodeViewer";
 	}
@@ -390,6 +392,17 @@ namespace GcodeViewer {
 
 	}
 
+			 //реакция на изменения размеров графического компонента
+	private: System::Void glControl1_SizeChanged(System::Object^  sender, System::EventArgs^  e) {
+		GL::MatrixMode(MatrixMode::Projection); //работаем с трехмерной проекцией
+		GL::Ortho(-1, 1, -1, 1, -1, 1); //Указываем систему координат
+		GL::Viewport(0, 0, glControl1->Width, glControl1->Height - 1); // Использовать всю поверхность GLControl под рисование															  
+		   //Матрица отвечающая за фруструм
+		Matrix4 perspective = Matrix4::CreatePerspectiveFieldOfView((float)(90 * Math::Asin(1.0f) / 90), (float)glControl1->Width / glControl1->Height, (float)0.05, (float)2000);
+		GL::LoadMatrix(perspective);
+		GL::ClearColor(Color::WhiteSmoke);
+		Console::Write(" Resize GL ");
+	}
 			 //обработка события CellBeginEdit
 	private: System::Void dataGridView1_CellBeginEdit(System::Object^  sender, System::Windows::Forms::DataGridViewCellCancelEventArgs^  e) {
 	}
@@ -431,38 +444,21 @@ namespace GcodeViewer {
 
 			 //обработка прокрутки колеса мыши по компоненту Control1
 	private: System::Void glControl1_MouseWheel(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
-
-		if (e->Delta > 0)
-			//от себя
-		{
+		if (e->Delta > 0) {	//от себя
 			eyeX = eyeX*multiplyEye;
 			eyeY = eyeY*multiplyEye;
 			eyeZ = eyeZ*multiplyEye;
 
 		}
-		else
-			// на себя
-		{
+		else {				// на себя
 			eyeX = eyeX / multiplyEye;
 			eyeY = eyeY / multiplyEye;
 			eyeZ = eyeZ / multiplyEye;
 		}
 		changeModelView();
-
 	}
 			 //обработка тика таймера
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
-		//	GL::MatrixMode(MatrixMode::Projection); //работаем с трехмерной проекцией
-		//	GL::LoadIdentity(); //сброс в единичную матрицу
-		//	GL::Ortho(-1, 1, -1, 1, -1, 1); //Указываем систему координат
-		//	GL::Viewport(0,0,glControl1->Width,glControl1->Height);	//указываем размер области в которой рисуем
-		//	GL::Clear(ClearBufferMask::ColorBufferBit|ClearBufferMask::DepthBufferBit);
-		//	GL::MatrixMode(MatrixMode::Projection); //работаем с трехмерной проекцией
-		//	GL::LoadIdentity(); //сброс в единичную матрицу
-			//Матрица отвечающая за фруструм
-		//	Matrix4 perspective = Matrix4::CreatePerspectiveFieldOfView(0.5f, glControl1->Width/glControl1->Height,1,100);
-		//	GL::LoadMatrix(perspective);
-		//	GL::ClearColor(Color::WhiteSmoke); //указываем цвет фона
 		glControl1->Invalidate();
 	}
 	private: System::Void glControl1_Load(System::Object^  sender, System::EventArgs^  e) {
@@ -470,6 +466,7 @@ namespace GcodeViewer {
 		GL::ClearColor(Color::WhiteSmoke);
 		GL::Enable(EnableCap::DepthTest);
 
+		GL::Viewport(0, 0, glControl1->Width, glControl1->Height - 1); // Использовать всю поверхность GLControl под рисование
 		GL::MatrixMode(MatrixMode::Projection); //работаем с трехмерной проекцией
 		GL::Ortho(-1, 1, -1, 1, -1, 1); //Указываем систему координат
 
@@ -487,35 +484,9 @@ namespace GcodeViewer {
 		if (!glLoaded)
 			return;
 		GL::Clear(ClearBufferMask::ColorBufferBit | ClearBufferMask::DepthBufferBit);
-		//рисуем обозначение системы координат
-		GL::Color3(Color::Gray); //цвет, которым будем рисовать
-		GL::Begin(PrimitiveType::Lines); //Что будем рисовать: линии
-		GL::Vertex3(w, 0, 0); GL::Vertex3(w, w, 0);
-		GL::Vertex3(w, w, 0); GL::Vertex3(0, w, 0);
-		GL::Vertex3(w, w, 0); GL::Vertex3(w, w, w);
-		GL::Vertex3(0, w, 0); GL::Vertex3(0, w, w);
-		GL::Vertex3(0, w, w); GL::Vertex3(0, 0, w);
-		GL::Vertex3(0, w, w); GL::Vertex3(w, w, w);
-		GL::Vertex3(0, 0, w); GL::Vertex3(w, 0, w);
-		GL::Vertex3(w, 0, w); GL::Vertex3(w, 0, 0);
-		GL::Vertex3(w, 0, w); GL::Vertex3(w, w, w);
-		GL::End();
-		GL::LineWidth(2.0f);
-		//OX
-		GL::Color3(Color::Green); //цвет, которым будем рисовать
-		GL::Begin(PrimitiveType::Lines); //Что будем рисовать: линии
-		GL::Vertex3(0, 0, 0);GL::Vertex3(30, 0, 0);
-		GL::End();
-		//OY
-		GL::Color3(Color::Blue);
-		GL::Begin(PrimitiveType::Lines);
-		GL::Vertex3(0, 0, 0);GL::Vertex3(0, 30, 0);
-		GL::End();
-		//OZ
-		GL::Color3(Color::Red);
-		GL::Begin(PrimitiveType::Lines);
-		GL::Vertex3(0, 0, 0);GL::Vertex3(0, 0, 30);
-		GL::End();
+
+		drawPolyLines();
+		drawOXYZ(0.0, 0.0, 0.0);
 		glControl1->SwapBuffers();
 	}
 
@@ -569,6 +540,80 @@ namespace GcodeViewer {
 				 eyeY = (float)(eyeY*rXYZ*Math::Cos(startAngV) / rXY);
 				 eyeZ = (float)(rXYZ*Math::Sin(startAngV));
 
+			 }
+			 void drawOXYZ(float x, float y, float z) {
+				 //рисуем обозначение системы координат
+				 GL::LineWidth(0.7f);
+				 GL::Color3(Color::Gray); //цвет, которым будем рисовать
+				 GL::Begin(PrimitiveType::Lines); //Что будем рисовать: линии
+				 GL::Vertex3(w + x, y, z);	GL::Vertex3(w + x, w + y, z);
+				 GL::Vertex3(w + x, w + y, z);	GL::Vertex3(x, w + y, z);
+				 GL::Vertex3(w + x, w + y, z);	GL::Vertex3(w + x, w + y, w + z);
+				 GL::Vertex3(x, w + y, z);	GL::Vertex3(x, w + y, w + z);
+				 GL::Vertex3(x, w + y, w + z);	GL::Vertex3(x, y, w + z);
+				 GL::Vertex3(x, w + y, w + z);	GL::Vertex3(w + x, w + y, w + z);
+				 GL::Vertex3(x, y, w + z);	GL::Vertex3(w + x, y, w + z);
+				 GL::Vertex3(w + x, y, w + z);	GL::Vertex3(w + x, y, z);
+				 GL::Vertex3(w + x, y, w + z);	GL::Vertex3(w + x, w + y, w + z);
+				 GL::End();
+				 GL::LineWidth(1.5f);
+				 //OX
+				 GL::Color3(Color::Green); //цвет, которым будем рисовать
+				 GL::Begin(PrimitiveType::Lines); //Что будем рисовать: линии
+				 GL::Vertex3(x, y, z); GL::Vertex3(x + 30, y, z);
+				 GL::End();
+				 //OY
+				 GL::Color3(Color::Blue);
+				 GL::Begin(PrimitiveType::Lines);
+				 GL::Vertex3(x, y, z); GL::Vertex3(x, y + 30, z);
+				 GL::End();
+				 //OZ
+				 GL::Color3(Color::Red);
+				 GL::Begin(PrimitiveType::Lines);
+				 GL::Vertex3(x, y, z); GL::Vertex3(x, y, z + 30);
+				 GL::End();
+			 }
+			 void drawPolyLines() {
+				 drawStartPoint(0.0, 0.0, 0.0);
+				 if (gdata->polylines!=nullptr) {
+					 float x=0, y=0, z=0;
+					 GL::LineWidth(1.0f);
+					 GL::Color3(Color::Red);
+					 GL::Begin(PrimitiveType::Lines);
+					 GL::Vertex3(x, y, z);
+
+					 for (int i = 0; i < gdata->polylines->Count; i++) {
+						 //берем цвет, указанный в классе полилиний (он отражает теоретический уровень тревожности текущей операции)
+						 GL::Color3(Color::FromArgb(gdata->polylines[i]->red,
+							 gdata->polylines[i]->green, gdata->polylines[i]->blue));
+			//			 GL::Vertex3(x, y, z);	//стартовая точка каждой линии
+						 if (gdata->polylines[i]->x!=nullptr) {
+							 for (int j = 0; j<gdata->polylines[i]->n;j++) {
+								 x = gdata->polylines[i]->x[j];
+								 y = gdata->polylines[i]->y[j];
+								 z = gdata->polylines[i]->z[j];
+								 GL::Vertex3(x, y, z);
+								 GL::Vertex3(x, y, z);
+							 }
+						 }
+						 else {
+							 Console::WriteLine(" gdata->polylines["+i+"]-> is nulptr ");
+						 }
+					 }
+					 GL::Vertex3(x, y, z);
+					 GL::End();
+				 }
+				 else {
+		//			 Console::Write(" gdata->polylines is nulptr ");
+				 }
+			 }
+			 void drawStartPoint(float x, float y, float z) {
+				 GL::LineWidth(1.0f);
+				 GL::Color3(Color::Black);
+				 GL::Begin(PrimitiveType::Quads);
+				 GL::Vertex3(x - 3, y, z); GL::Vertex3(x, y + 3, z);
+				 GL::Vertex3(x + 3, y, z); GL::Vertex3(x, y - 3, z);
+				 GL::End();
 			 }
 	};
 }

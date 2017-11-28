@@ -51,7 +51,7 @@ bool GcodeData::loadFile(String^ filepath)
 }
 
 //функция транслирующая строчные команды коллекции в траекторию, 
-// в ломаные линии некоторых цветов в коллекцию polyline
+// в ломаные линии некоторых цветов в коллекцию polylines
 Generic::List<Polyline^>^ GData::GcodeData::tranlate(System::Collections::Generic::List<String^>^ cmds)
 {
 	//если коллекция пуста, то нечего и dелать
