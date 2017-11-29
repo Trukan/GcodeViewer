@@ -6,6 +6,7 @@ using namespace System::Collections;
 //конструктор Polyline, инициализирует массивы координат по соответствующей длине
 GData::Polyline::Polyline(int _n)
 {
+	n = 0;
 	Polyline::x = gcnew Collections::Generic::List<float>(_n);
 	Polyline::y = gcnew Collections::Generic::List<float>(_n);
 	Polyline::z = gcnew Collections::Generic::List<float>(_n);
@@ -14,6 +15,24 @@ GData::Polyline::Polyline(int _n)
 bool GData::Polyline::update()
 {
 	return false;
+}
+
+//вычисляет толщину снимаемого за оборот шпинделя слоя, отражает валидность в цвете,
+//в виде чисел red, green, blue
+void GData::Polyline::stickToColor()
+{
+	float stick = this->feed / this->speedrate;
+	if (this->feed > Polyline::feedLimit) this->red=100;
+	if (stick <= Polyline::stickLimit) {
+		float t = 2*stick / stickLimit;
+		this->blue = (int)(2 - t) * 255 + (int)(t - 0.001)*(int)((2 - t) * 255);
+		this->green = (int)(t - 0.001) * 255 + (int)(2-t)*(int)(t * 255);
+	}
+	else {
+		this->blue = 0;
+		this->green = 200;
+		this->red += 155;
+	}
 }
 /*
 //берем последнюю точку с заданной линии как начальную для новой
@@ -45,4 +64,11 @@ Polyline ^ GData::Polyline::operator/(Polyline ^ p, float d)
 		p->z[i] = p->z[i] / d;
 	}
 	return p;
+}
+
+void GData::Polyline::setColor(Polyline^p, int r, int g, int b)
+{
+	p->red = r;
+	p->green = g;
+	p->blue = b;
 }

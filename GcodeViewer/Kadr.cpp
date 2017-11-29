@@ -130,10 +130,10 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 	if (bf)tpl->feed = feedrate;
 	//если нет параметров-координат в строке
 	if (!(bx || by || bz || bi || bj || bk)) {
-		
+
 	}
 	else {
-		//при вводе координат, шпиндель должен уже вращаться,
+		//при вводе координат, шпиндель должен уже вращаться, если это не подача на холостом ходу
 		//а текущий режим должен быть выбран, подача при нем должна иметь значение больше нуля
 		//на холостом ходу может действовать подача по умолчанию
 		if (m == MState::StartRotateClockwise || curGstate == GState::NotLoad) {
@@ -141,7 +141,16 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 				&& (curGstate == GState::NotLoad || feedrate > 0)) {
 				//проверим, все ли параметры на месте для Kруговой интерполяции (только для движения по часовой стрелке)
 				if (curGstate == GState::CircClockwise && ((bi&&bj&&bx&&by) || (bj&&bk&&by&&bz) || (bk&&bi&&bz&&bx))) {
+					if (bi&&bj&&bx&&by) {
 
+					}
+					if (bj&&bk&&by&&bz) {
+
+					}
+					if (bk&&bi&&bz&&bx) {
+
+					}
+					tpl->stickToColor();
 				}
 				else {
 
@@ -152,12 +161,10 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 						if (by)tpl->y[0] = Kadr::y;
 						if (bz)tpl->z[0] = Kadr::z;
 						if (curGstate == GState::NotLoad) {
-							tpl->red = 255;
-							tpl->blue = 0;
-							tpl->green = 0;
+							Polyline::setColor(tpl, 170, 170, 170);
 						}
 						else {
-
+							tpl->stickToColor();
 						}
 					}
 					else {
