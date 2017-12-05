@@ -8,6 +8,7 @@ namespace GData {
 	using namespace System::Collections;
 	//хранилище параметров команд одной строки
 	//класс, предназначен дл€ содержани€ координат точек ломаной неразрывной линии одного цвета (RGB)
+	//планируетс€ содержать в экземпл€рах этого класса круговые интерпол€ции или одиночные точки концов линий
 	public ref class Polyline sealed {
 	public:
 		Polyline(int _n);		//указываетс€ начальна€ емкость массивов
@@ -16,7 +17,7 @@ namespace GData {
 		~Polyline() {};
 	public:
 		//рекомендуема€ предельна€ толщина снимаемого сло€, мм/об (без учета многозаходного инструмента)
-		static float stickLimit = 0.1; 
+		static float stickLimit = (float)0.1; 
 		//рекомендуема€ предельна€ подача, мм 
 		static float feedLimit = 4000;
 		GState gstate = GState::None;
@@ -27,8 +28,8 @@ namespace GData {
 		Collections::Generic::List<float>^ x;		//массивы координат
 		Collections::Generic::List<float>^ y;
 		Collections::Generic::List<float>^ z;
-	private:int red, green, blue;		//значени€ цвета в формате RGB 
-	public:
+		int red, green, blue;		//значени€ цвета в формате RGB 
+
 		bool update();
 		//	bool setLastPointAsFirst(Polyline^);
 

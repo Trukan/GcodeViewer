@@ -157,9 +157,9 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 
 					//проверим, все ли параметры на месте дл€ Ћинейной интерпол€ции
 					if ((curGstate == GState::NotLoad || curGstate == GState::LineRun) && !(bi || bj || bk)) {
-						if (bx)tpl->x[0] = Kadr::x;
-						if (by)tpl->y[0] = Kadr::y;
-						if (bz)tpl->z[0] = Kadr::z;
+						if (bx)tpl->x->Insert(0, Kadr::x);
+						if (by)tpl->y->Insert(0, Kadr::y);
+						if (bz)tpl->z->Insert(0, Kadr::z);
 						if (curGstate == GState::NotLoad) {
 							Polyline::setColor(tpl, 170, 170, 170);
 						}
