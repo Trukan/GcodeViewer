@@ -12,7 +12,7 @@ Kadr::Kadr()
 }
 void Kadr::reset(bool full) {
 	if (full) {
-		feedNoLoad = 2000;
+		feedNoLoad = 4000;
 		feedrate = 0;
 		curGstate = GState::None;
 		formatInfo = gcnew NumberFormatInfo();
@@ -142,7 +142,16 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 				//проверим, все ли параметры на месте для Kруговой интерполяции (только для движения по часовой стрелке)
 				if (curGstate == GState::CircClockwise && ((bi&&bj&&bx&&by) || (bj&&bk&&by&&bz) || (bk&&bi&&bz&&bx))) {
 					if (bi&&bj&&bx&&by) {
-
+						interpolate(Kadr::lx, Kadr::ly, Kadr::lz, Kadr::x, Kadr::y, Kadr::i, Kadr::j, tpl->x, tpl->y, tpl->z);
+						lx = tpl->x[tpl->x->Count - 1];
+						ly = tpl->y[tpl->y->Count - 1];
+						lz = tpl->z[tpl->z->Count - 1];
+						/*	Console::Write("\n\n");
+							for (int ii = 0; ii < tpl->x->Count; ii=ii+10)
+							{
+								Console::Write(tpl->x[ii] + ":" + tpl->y[ii]+ "  ");
+							}
+						*/
 					}
 					if (bj&&bk&&by&&bz) {
 
@@ -157,9 +166,27 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 
 					//проверим, все ли параметры на месте для Линейной интерполяции
 					if ((curGstate == GState::NotLoad || curGstate == GState::LineRun) && !(bi || bj || bk)) {
-						if (bx)tpl->x->Insert(0, Kadr::x);
-						if (by)tpl->y->Insert(0, Kadr::y);
-						if (bz)tpl->z->Insert(0, Kadr::z);
+						if (bx) {
+							tpl->x->Insert(0, Kadr::x);
+							lx = Kadr::x;
+						}
+						else {
+							tpl->x->Insert(0, lx);
+						}
+						if (by) {
+							tpl->y->Insert(0, Kadr::y);
+							ly = Kadr::y;
+						}
+						else {
+							tpl->y->Insert(0, ly);
+						}
+						if (bz) {
+							tpl->z->Insert(0, Kadr::z);
+							lz = Kadr::z;
+						}
+						else {
+							tpl->z->Insert(0, lz);
+						}
 						if (curGstate == GState::NotLoad) {
 							Polyline::setColor(tpl, 170, 170, 170);
 						}
@@ -191,7 +218,7 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 		//здесь будет определение цвета линии по величине подачи, и скорости вращения
 		//или не будет
 	}
-
+	pl = tpl;
 	return true;
 }
 
@@ -385,4 +412,33 @@ bool Kadr::isGoodNumber(wchar_t ch) {
 	//bool res = ((ch == 'Y') || Char::IsLetter(ch)) && !(ch == '.');
 	return res;
 }
-
+//интерполирует сектор круга в списки координат
+bool Kadr::interpolate(float lx, float ly, float lz, float x, float y, float i, float j,
+	Generic::List<float>^ listx, Generic::List<float>^ listy, Generic::List<float>^ listz) {
+	double A = 0;	//начальный угол в координатной плоскости в радианах
+	double dA = 0;	//обсчитываемый угол относительно начального угла
+	double dd = 0;	//шаг обсчета в радианах
+	double B = 0;	//конечный угол
+	double R = 0;	//радиус окружности
+	double dx = -i, dy = -j; //разница между координатами текущей обсчитываемой точки и центром окружности
+	R = Math::Sqrt((Math::Pow(dx, 2) + Math::Pow(dy, 2)));
+	dd = 1 / (100 * R);	//приблизительная длина отрезков 0.01 (мм)
+	A = Math::Atan2(dy, dx);
+	B = Math::Atan2((dy + y - ly), (dx + x - lx));
+	if (B > A) A = A + 2 * Math::Acos(-1); //если и не только углы А и В в квадрантах 1/2 и 3/4 соответственно то угол В надо увеличить на 2ПИ
+	listx->Insert(0, lx);
+	listy->Insert(0, ly);
+	listz->Insert(0, lz);
+	for (int n = 1; dA < - B + A; n++)
+	{
+		dA = dA + dd;
+		dx = R * Math::Cos(A - dA);
+		dy = R * Math::Sin(A - dA);
+		if (n % 2 == 0) {
+			listx->Insert(n / 10, (float)(lx + dx + i));
+			listy->Insert(n / 10, (float)(ly + dy + j));
+			listz->Insert(n / 10, lz);
+		}
+	}
+	return true;
+}

@@ -21,6 +21,7 @@ namespace GData {
 
 
 		static	float x, y, z, i, j, k;
+		static float lx=0, ly=0, lz=0; //предыдущие значения координат, потребуется для круговой интероляции
 		static	bool bg, bf,
 			bm, bs,
 			bx, by, bz,
@@ -50,6 +51,9 @@ namespace GData {
 		static	bool getFloat(String ^str, wchar_t param, int startIndex, int &backlastindex);
 
 		static	bool isGoodNumber(wchar_t ch);
+		//интерполирует сектор круга в списки координат
+		static	bool interpolate(float lx, float ly, float lz, float x, float y, float i, float j,
+			Generic::List<float>^ listx, Generic::List<float>^ listy, Generic::List<float>^ listz);
 
 		static	bool isGoodLetter(wchar_t);
 	};

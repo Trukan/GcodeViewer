@@ -521,17 +521,20 @@ namespace GcodeViewer {
 		mdown = false;
 
 	}
+				//меняем точку обзора, дальность (ближе/дальше)
 			 void changeModelView() {
 				 modelview = Matrix4::LookAt(eyeX, eyeY, eyeZ, targetX, targetY, targetZ, upX, upY, upZ);
 				 GL::MatrixMode(MatrixMode::Modelview);
 				 GL::LoadMatrix(modelview);
 			 }
+			 //меняем точку обзора по горизонтали (вправо/влево)
 			 void  rotateG(double U) {
 				 rXY = Math::Sqrt((Math::Pow(eyeX, 2) + Math::Pow(eyeY, 2)));
 				 startAngG = startAngG + U;
 				 eyeX = (float)(rXY*Math::Sin(startAngG));
 				 eyeY = (float)(rXY*Math::Cos(startAngG));
 			 }
+			 //меняем точку обзора по вертикали (вверх/вниз)
 			 void  rotateV(double U) {
 				 rXY = Math::Sqrt((Math::Pow(eyeX, 2) + Math::Pow(eyeY, 2)));
 				 rXYZ = Math::Sqrt((Math::Pow(eyeX, 2) + Math::Pow(eyeY, 2) + Math::Pow(eyeZ, 2)));
@@ -541,8 +544,8 @@ namespace GcodeViewer {
 				 eyeZ = (float)(rXYZ*Math::Sin(startAngV));
 
 			 }
+			 //рисуем обозначение системы координат
 			 void drawOXYZ(float x, float y, float z) {
-				 //рисуем обозначение системы координат
 				 GL::LineWidth(0.7f);
 				 GL::Color3(Color::Gray); //цвет, которым будем рисовать
 				 GL::Begin(PrimitiveType::Lines); //Что будем рисовать: линии
@@ -573,6 +576,7 @@ namespace GcodeViewer {
 				 GL::Vertex3(x, y, z); GL::Vertex3(x, y, z + 30);
 				 GL::End();
 			 }
+			 //рисуем линии
 			 void drawPolyLines() {
 				 drawStartPoint(0.0, 0.0, 0.0);
 				 if (gdata->polylines!=nullptr) {
@@ -588,7 +592,7 @@ namespace GcodeViewer {
 							 gdata->polylines[i]->green, gdata->polylines[i]->blue));
 			//			 GL::Vertex3(x, y, z);	//стартовая точка каждой линии
 						 if (gdata->polylines[i]->x!=nullptr) {
-							 for (int j = 0; j<gdata->polylines[i]->n;j++) {
+							 for (int j = 0; j < gdata->polylines[i]->x->Count;j++) {
 								 x = gdata->polylines[i]->x[j];
 								 y = gdata->polylines[i]->y[j];
 								 z = gdata->polylines[i]->z[j];
@@ -604,9 +608,10 @@ namespace GcodeViewer {
 					 GL::End();
 				 }
 				 else {
-		//			 Console::Write(" gdata->polylines is nulptr ");
+			//		 Console::Write(" gdata->polylines is nulptr ");
 				 }
 			 }
+			 //рисуем стартовое перекрестие (квадрат)
 			 void drawStartPoint(float x, float y, float z) {
 				 GL::LineWidth(1.0f);
 				 GL::Color3(Color::Black);

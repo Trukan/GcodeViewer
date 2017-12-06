@@ -26,7 +26,7 @@ GcodeData::~GcodeData()
 //загрузка файла по filepath
 bool GcodeData::loadFile(String^ filepath)
 {
-	if (filepath == nullptr||!File::Exists(filepath))
+	if (filepath == nullptr || !File::Exists(filepath))
 		return false;
 	Kadr::reset(true);
 	try {
@@ -62,20 +62,24 @@ Generic::List<Polyline^>^ GData::GcodeData::tranlate(System::Collections::Generi
 //	GData::MState mstate = MState::None;
 	//состо€ние строки
 	GData::Kadr^ kstate = gcnew Kadr();
-	System::Collections::Generic::List<Polyline^>^ lines;
+	polylines = gcnew Generic::List<Polyline^>();
 	//пройдемс€ по коллекции comds
-	int i = 0;
+	int i = 0, j = 0;
 	while (i < cmds->Count) {
 
 		String^ str = gcnew String(cmds[i]);
 		Polyline^ line = gcnew Polyline(0);
-		if (!Kadr::getPolyline(str, line)){
+		if (!Kadr::getPolyline(str, line)) {
 			errorRows->Add(i);
+		}
+		else {
+			polylines->Insert(j, line);			//вставка линии в массив полилиний
+			j++;
 		}
 		i++;
 	}
 
-	return lines;
+	return polylines;
 }
 
 
