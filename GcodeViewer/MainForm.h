@@ -65,7 +65,7 @@ namespace GcodeViewer {
 	private:
 		bool glLoaded = false;
 		Matrix4 modelview;
-		int w = 9;
+		int w = 4;
 		float multiplyEye = 1.175f;
 		float eyeX = 300, eyeY = -400, eyeZ = 500;
 		float  targetX = 0, targetY = 0, targetZ = 0;
@@ -563,17 +563,17 @@ namespace GcodeViewer {
 				 //OX
 				 GL::Color3(Color::Green); //цвет, которым будем рисовать
 				 GL::Begin(PrimitiveType::Lines); //„то будем рисовать: линии
-				 GL::Vertex3(x, y, z); GL::Vertex3(x + 30, y, z);
+				 GL::Vertex3(x, y, z); GL::Vertex3(x + 15, y, z);
 				 GL::End();
 				 //OY
 				 GL::Color3(Color::Blue);
 				 GL::Begin(PrimitiveType::Lines);
-				 GL::Vertex3(x, y, z); GL::Vertex3(x, y + 30, z);
+				 GL::Vertex3(x, y, z); GL::Vertex3(x, y + 15, z);
 				 GL::End();
 				 //OZ
 				 GL::Color3(Color::Red);
 				 GL::Begin(PrimitiveType::Lines);
-				 GL::Vertex3(x, y, z); GL::Vertex3(x, y, z + 30);
+				 GL::Vertex3(x, y, z); GL::Vertex3(x, y, z + 15);
 				 GL::End();
 			 }
 			 //рисуем линии
@@ -592,6 +592,7 @@ namespace GcodeViewer {
 							 gdata->polylines[i]->green, gdata->polylines[i]->blue));
 			//			 GL::Vertex3(x, y, z);	//стартова€ точка каждой линии
 						 if (gdata->polylines[i]->x!=nullptr) {
+
 							 for (int j = 0; j < gdata->polylines[i]->x->Count;j++) {
 								 x = gdata->polylines[i]->x[j];
 								 y = gdata->polylines[i]->y[j];

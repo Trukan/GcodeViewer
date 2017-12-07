@@ -434,7 +434,7 @@ bool Kadr::interpolate(float lx, float ly, float lz, float x, float y, float i, 
 		dA = dA + dd;
 		dx = R * Math::Cos(A - dA);
 		dy = R * Math::Sin(A - dA);
-		if (n % 2 == 0) {
+		if (n % 10 == 0) {
 			listx->Insert(n / 10, (float)(lx + dx + i));
 			listy->Insert(n / 10, (float)(ly + dy + j));
 			listz->Insert(n / 10, lz);
