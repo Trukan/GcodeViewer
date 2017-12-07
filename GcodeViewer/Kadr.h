@@ -33,7 +33,7 @@ namespace GData {
 		static	float feedNoLoad;
 		static	MState m;
 		static	NumberFormatInfo^ formatInfo;
-		static	Polyline^ polyline;
+		static	Polyline^ minmax;
 
 	private:
 		//возвращает строку, содержащую первое число от символа заданной строки с заданным индексом,

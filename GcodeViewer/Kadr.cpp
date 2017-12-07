@@ -18,6 +18,7 @@ void Kadr::reset(bool full) {
 		formatInfo = gcnew NumberFormatInfo();
 		fool = true;
 		s = 0;
+		
 	}
 	bg = false;
 	bm = false;

@@ -20,7 +20,9 @@ namespace GData {
 		System::Collections::Generic::List<Int32>^ errorRows;
 		System::Collections::Generic::List<String^>^ commands;
 		System::Collections::Generic::List<Polyline^>^ polylines;
-
+		float minX = 0, maxX = 0;
+		float minY = 0, maxY = 0;
+		float minZ = 0, maxZ = 0;
 		GcodeData();
 		~GcodeData();
 		//свойство для обращения к коллекции строк комманд в духе gcoded->str[i]
@@ -31,7 +33,9 @@ namespace GData {
 
 			//функция загрузки данных из файла в коллекцию строк комманд
 		bool loadFile(String^ filepath);
-
+		//фиксирует минимальные максмальные координаты всех кадров
+		bool checkMinMax();
+		void reset();
 		//функция транслирующая строчные команды коллекции в траекторию, 
 		// в ломаные линии некоторых цветов в коллекцию polylines
 		System::Collections::Generic::List<Polyline^>^ tranlate(System::Collections::Generic::List<String^>^ cmds);

@@ -16,6 +16,9 @@ GcodeData::GcodeData()
 	commands->Clear();
 	errorRows = gcnew System::Collections::Generic::List<Int32>(1);
 	errorRows->Clear();
+	minX = 0; maxX = 0;
+	minY = 0; maxY = 0;
+	minZ = 0; maxZ = 0;
 }
 
 GcodeData::~GcodeData()
@@ -29,6 +32,7 @@ bool GcodeData::loadFile(String^ filepath)
 	if (filepath == nullptr || !File::Exists(filepath))
 		return false;
 	Kadr::reset(true);
+	reset();
 	try {
 		commands->Clear();
 		StreamReader ^sr = gcnew StreamReader(filepath);
@@ -78,7 +82,7 @@ Generic::List<Polyline^>^ GData::GcodeData::tranlate(System::Collections::Generi
 		}
 		i++;
 	}
-
+	checkMinMax();
 	return polylines;
 }
 
@@ -92,5 +96,40 @@ String^ GcodeData::str::get(int index) {
 void GcodeData::str::set(int index, String^ value) {
 	commands[index] = value;
 }
+//фиксирует минимальные максмальные координаты всех кадров
+bool GcodeData::checkMinMax() {
+	if (polylines != nullptr) {
+		float tmpX = 0, tmpY = 0, tmpZ = 0;
+		for (int i = 0; i < polylines->Count; i++) {
+			if (polylines[i]->x != nullptr) {
 
+				for (int j = 0; j < polylines[i]->x->Count; j++) {
+					tmpX = polylines[i]->x[j];
+					tmpY = polylines[i]->y[j];
+					tmpZ = polylines[i]->z[j];
+					if (minX > tmpX) minX = tmpX;
+					if (maxX < tmpX) maxX = tmpX;
+					if (minY > tmpY) minY = tmpY;
+					if (maxY < tmpY) maxY = tmpY;
+					if (minZ > tmpZ) minZ = tmpZ;
+					if (maxZ < tmpZ) maxZ = tmpZ;
+				}
+			}
+			else {
+				Console::WriteLine("\n checkminmax polylines[" + i + "]-> is nulptr ");
+			}
+		}
+	}
+	else {
+		Console::Write("\n checkminmax polylines is nulptr ");
+	}
+	return true;
+}
+
+void GData::GcodeData::reset()
+{
+	minX = 0; maxX = 0;
+	minY = 0; maxY = 0;
+	minZ = 0; maxZ = 0;
+}
 

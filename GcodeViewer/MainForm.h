@@ -70,11 +70,15 @@ namespace GcodeViewer {
 		float eyeX = 300, eyeY = -400, eyeZ = 500;
 		float  targetX = 0, targetY = 0, targetZ = 0;
 		float upX = 0, upY = 0, upZ = 24;
+		float mdlX = 0;
+		float mdlY = 0;
+		float mdlZ = 0;
 		double rXY, rXYZ, pi = Math::Acos(-1.0);
+		bool NotDrawedStartpoint = true;
 		bool mdown = false;	//кнопка мыши нажата
 		int mdX, mdY;		//координаты нажатой мыши
 		int mX, mY;			//текущие координаты мыши
-		double startAngG = 2.5, startAngV = pi / 4; //стартовый угол обзора
+		double angG = 2.5, angV = pi / 4; //стартовый угол обзора
 		double angleG = 0, angleV = 0;//угол для поворота обзора от нажатой мыши, горизонтальный и вертикальный
 		String^ opndfileName = "";
 		String^ editCellText = "";
@@ -205,7 +209,7 @@ namespace GcodeViewer {
 			this->textUnderMenu->Size = System::Drawing::Size(343, 13);
 			this->textUnderMenu->TabIndex = 0;
 			this->textUnderMenu->TabStop = false;
-			this->textUnderMenu->Text = L"Test Text Maxlength char [undef]";
+			this->textUnderMenu->Text = L"Загрузите комманды";
 			// 
 			// saveFileDialog1
 			// 
@@ -373,12 +377,19 @@ namespace GcodeViewer {
 						break;
 					rowNumber = rowNumber + 1;
 				}
-
 			}
 			else {
 				this->textUnderMenu->Text = "не открытся" + opndfileName;
 			}
 		}
+		textUnderMenu->Text = "Границы: X:: " + gdata->minX + " : " + gdata->maxX + " Y:: "
+			+ gdata->minY + " : " + gdata->maxY + " Z:: " + gdata->minZ + " : " + gdata->maxZ;
+		mdlX = (gdata->minX + gdata->maxX) / 2;
+		mdlY = (gdata->minY + gdata->maxY) / 2;
+		mdlZ = (gdata->minZ + gdata->maxZ) / 2;
+		targetX = mdlX;
+		targetY = mdlY;
+		targetZ = mdlZ;
 	}
 			 //обработка нажатия кнопки меню "выход"
 	private: System::Void выходToolStripMenuItem1_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -444,18 +455,32 @@ namespace GcodeViewer {
 
 			 //обработка прокрутки колеса мыши по компоненту Control1
 	private: System::Void glControl1_MouseWheel(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
-		if (e->Delta > 0) {	//от себя
-			eyeX = eyeX*multiplyEye;
-			eyeY = eyeY*multiplyEye;
-			eyeZ = eyeZ*multiplyEye;
+		double dx = 0, dy = 0;
+		rXY = Math::Sqrt((Math::Pow(eyeX - targetX, 2) + Math::Pow(eyeY - targetY, 2)));
+		dx = ((double)rXY*(mX - (double)glControl1->Width / 2) / (double)glControl1->Width);
+		dy = ((double)rXY*(mY - (double)glControl1->Height / 2) / (double)glControl1->Height);
+		if (e->Delta > 0) {	//от себя - умножаем на множитель
+	//		changeTarget(-dx,-dy);
+			eyeX = (eyeX - targetX) * multiplyEye + targetX;
+			eyeY = (eyeY - targetY) * multiplyEye + targetY;
+			eyeZ = eyeZ * multiplyEye;
+
 
 		}
-		else {				// на себя
-			eyeX = eyeX / multiplyEye;
-			eyeY = eyeY / multiplyEye;
+		else {				// на себя - делим на множитель
+	//	//	changeTarget(dx, dy);
+			eyeX = (eyeX - targetX) / multiplyEye + targetX;
+			eyeY = (eyeY - targetY) / multiplyEye + targetY;
 			eyeZ = eyeZ / multiplyEye;
 		}
 		changeModelView();
+		//	targetX = 30, targetY = 30;
+		//	glControl1->Width, glControl1->Height
+			/*rXY = Math::Sqrt((Math::Pow(eyeX- targetX, 2) + Math::Pow(eyeY- targetY, 2)));
+					 startAngG = startAngG + U;
+					 eyeX = (float)(rXY*Math::Sin(startAngG)+ targetX);
+					 eyeY = (float)(rXY*Math::Cos(startAngG)+ targetY);
+					 */
 	}
 			 //обработка тика таймера
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
@@ -474,8 +499,8 @@ namespace GcodeViewer {
 		Matrix4 perspective = Matrix4::CreatePerspectiveFieldOfView((float)(90 * Math::Asin(1.0f) / 90), (float)glControl1->Width / glControl1->Height, (float)0.05, (float)2000);
 		GL::LoadMatrix(perspective);
 		GL::ClearColor(Color::WhiteSmoke); //указываем цвет фона
-		//Здесь мы задаем нашу камеру в точке(30, 70, 80), 
-		//направление взгляда в центр системы координта(0, 0, 0).
+		//Здесь мы задаем нашу камеру в точке, 
+		//направление взгляда по началу в центр системы координат(0, 0, 0).
 		//Ориентация такая, что ось OZ направлена вверх.
 		changeModelView();
 	}
@@ -486,7 +511,8 @@ namespace GcodeViewer {
 		GL::Clear(ClearBufferMask::ColorBufferBit | ClearBufferMask::DepthBufferBit);
 
 		drawPolyLines();
-		drawOXYZ(0.0, 0.0, 0.0);
+
+		drawOXYZ(mdlX, mdlY, mdlZ);
 		glControl1->SwapBuffers();
 	}
 
@@ -521,7 +547,15 @@ namespace GcodeViewer {
 		mdown = false;
 
 	}
-				//меняем точку обзора, дальность (ближе/дальше)
+			 //меняем точку фокуса камеры (фруструма)
+	/*		 void changeTarget(double dx, double dy) {
+				 double angScr = Math::Atan2(dy, dx);
+				 double coof=0.5;
+				 targetX = targetX + coof*(dx * Math::Sin(angG - angScr) - dy * Math::Cos(angG - angScr));
+				 targetY = targetY - coof*(dx * Math::Cos(angG - angScr) + dy * Math::Sin(angG - angScr));
+				 changeModelView();
+			 }
+	*/		 //меняем/перезагружаем точку обзора
 			 void changeModelView() {
 				 modelview = Matrix4::LookAt(eyeX, eyeY, eyeZ, targetX, targetY, targetZ, upX, upY, upZ);
 				 GL::MatrixMode(MatrixMode::Modelview);
@@ -529,19 +563,19 @@ namespace GcodeViewer {
 			 }
 			 //меняем точку обзора по горизонтали (вправо/влево)
 			 void  rotateG(double U) {
-				 rXY = Math::Sqrt((Math::Pow(eyeX, 2) + Math::Pow(eyeY, 2)));
-				 startAngG = startAngG + U;
-				 eyeX = (float)(rXY*Math::Sin(startAngG));
-				 eyeY = (float)(rXY*Math::Cos(startAngG));
+				 rXY = Math::Sqrt((Math::Pow(eyeX - targetX, 2) + Math::Pow(eyeY - targetY, 2)));
+				 angG = angG + U;
+				 eyeX = (float)(rXY*Math::Sin(angG) + targetX);
+				 eyeY = (float)(rXY*Math::Cos(angG) + targetY);
 			 }
 			 //меняем точку обзора по вертикали (вверх/вниз)
 			 void  rotateV(double U) {
-				 rXY = Math::Sqrt((Math::Pow(eyeX, 2) + Math::Pow(eyeY, 2)));
-				 rXYZ = Math::Sqrt((Math::Pow(eyeX, 2) + Math::Pow(eyeY, 2) + Math::Pow(eyeZ, 2)));
-				 startAngV = startAngV + U;
-				 eyeX = (float)(eyeX*rXYZ*Math::Cos(startAngV) / rXY);
-				 eyeY = (float)(eyeY*rXYZ*Math::Cos(startAngV) / rXY);
-				 eyeZ = (float)(rXYZ*Math::Sin(startAngV));
+				 rXY = Math::Sqrt((Math::Pow(eyeX - targetX, 2) + Math::Pow(eyeY - targetY, 2)));
+				 rXYZ = Math::Sqrt((Math::Pow(eyeX - targetX, 2) + Math::Pow(eyeY - targetY, 2) + Math::Pow(eyeZ, 2)));
+				 angV = angV + U;
+				 eyeX = (float)((eyeX - targetX)*rXYZ*Math::Cos(angV) / rXY + targetX);
+				 eyeY = (float)((eyeY - targetY)*rXYZ*Math::Cos(angV) / rXY + targetY);
+				 eyeZ = (float)(rXYZ*Math::Sin(angV));
 
 			 }
 			 //рисуем обозначение системы координат
@@ -578,9 +612,22 @@ namespace GcodeViewer {
 			 }
 			 //рисуем линии
 			 void drawPolyLines() {
-				 drawStartPoint(0.0, 0.0, 0.0);
-				 if (gdata->polylines!=nullptr) {
-					 float x=0, y=0, z=0;
+				 if (gdata->polylines != nullptr) {
+					 //рисуем стартовую точку
+					 NotDrawedStartpoint = true;
+					 for (int i = 0; i < gdata->polylines->Count && NotDrawedStartpoint; i++) {
+						 if (gdata->polylines[i]->x != nullptr) {
+							 for (int j = 0; j < gdata->polylines[i]->x->Count; j++) {
+								 if (NotDrawedStartpoint) {
+									 drawStartPoint(gdata->polylines[i]->x[j], gdata->polylines[i]->y[j], gdata->polylines[i]->z[j]);
+									 NotDrawedStartpoint = false;
+									 break;
+								 }
+							 }
+						 }
+					 }
+					 //задаем начальные параметры отрисовки линий
+					 float x = 0, y = 0, z = 0;
 					 GL::LineWidth(1.0f);
 					 GL::Color3(Color::Red);
 					 GL::Begin(PrimitiveType::Lines);
@@ -590,36 +637,38 @@ namespace GcodeViewer {
 						 //берем цвет, указанный в классе полилиний (он отражает теоретический уровень тревожности текущей операции)
 						 GL::Color3(Color::FromArgb(gdata->polylines[i]->red,
 							 gdata->polylines[i]->green, gdata->polylines[i]->blue));
-			//			 GL::Vertex3(x, y, z);	//стартовая точка каждой линии
-						 if (gdata->polylines[i]->x!=nullptr) {
+						 //			 GL::Vertex3(x, y, z);	//стартовая точка каждой линии
+						 if (gdata->polylines[i]->x != nullptr) {
 
-							 for (int j = 0; j < gdata->polylines[i]->x->Count;j++) {
+							 for (int j = 0; j < gdata->polylines[i]->x->Count; j++) {
 								 x = gdata->polylines[i]->x[j];
 								 y = gdata->polylines[i]->y[j];
 								 z = gdata->polylines[i]->z[j];
+
 								 GL::Vertex3(x, y, z);
 								 GL::Vertex3(x, y, z);
 							 }
 						 }
 						 else {
-							 Console::WriteLine(" gdata->polylines["+i+"]-> is nulptr ");
+							 Console::WriteLine(" gdata->polylines[" + i + "]-> is nulptr ");
 						 }
 					 }
 					 GL::Vertex3(x, y, z);
 					 GL::End();
 				 }
 				 else {
-			//		 Console::Write(" gdata->polylines is nulptr ");
+					 //		 Console::Write(" gdata->polylines is nulptr ");
 				 }
 			 }
 			 //рисуем стартовое перекрестие (квадрат)
 			 void drawStartPoint(float x, float y, float z) {
-				 GL::LineWidth(1.0f);
+				 GL::LineWidth(1.5f);
 				 GL::Color3(Color::Black);
 				 GL::Begin(PrimitiveType::Quads);
 				 GL::Vertex3(x - 3, y, z); GL::Vertex3(x, y + 3, z);
 				 GL::Vertex3(x + 3, y, z); GL::Vertex3(x, y - 3, z);
 				 GL::End();
 			 }
+
 	};
 }
