@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "GcodeData.h"
 namespace GcodeViewer {
 
@@ -9,12 +9,13 @@ namespace GcodeViewer {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::Threading;
 	using namespace OpenTK;
 	using namespace OpenTK::Platform::Windows;
 	using namespace OpenTK::Graphics::OpenGL;
 
 	/// <summary>
-	/// Сводка для MainForm
+	/// РЎРІРѕРґРєР° РґР»СЏ MainForm
 	/// </summary>
 	public ref class MainForm : public System::Windows::Forms::Form
 	{
@@ -27,12 +28,12 @@ namespace GcodeViewer {
 			this->bindingSrc1 = gcnew System::Windows::Forms::BindingSource;
 			this->table = gcnew DataTable;
 			//
-			//TODO: добавьте код конструктора
+			//TODO: РґРѕР±Р°РІСЊС‚Рµ РєРѕРґ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°
 			//
 		}
 	protected:
 		/// <summary>
-		/// Освободить все используемые ресурсы.
+		/// РћСЃРІРѕР±РѕРґРёС‚СЊ РІСЃРµ РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ СЂРµСЃСѓСЂСЃС‹.
 		/// </summary>
 		~MainForm()
 		{
@@ -45,11 +46,11 @@ namespace GcodeViewer {
 	protected:
 	private: System::Windows::Forms::ToolStrip^  toolStrip1;
 	private: System::Windows::Forms::ToolStripDropDownButton^  toolStripDropDownButton1;
-	private: System::Windows::Forms::ToolStripMenuItem^  открытьToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  сохранитьToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  сохранитьКакToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  закрытьToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  выходToolStripMenuItem1;
+	private: System::Windows::Forms::ToolStripMenuItem^  РѕС‚РєСЂС‹С‚СЊToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  СЃРѕС…СЂР°РЅРёС‚СЊToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  Р·Р°РєСЂС‹С‚СЊToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  РІС‹С…РѕРґToolStripMenuItem1;
 
 	private: System::Windows::Forms::OpenFileDialog^  openFileDialog1;
 	private: System::Windows::Forms::SaveFileDialog^  saveFileDialog1;
@@ -64,38 +65,40 @@ namespace GcodeViewer {
 
 	private:
 		bool glLoaded = false;
+		bool fileisopen = false;
 		Matrix4 modelview;
 		int w = 4;
 		float multiplyEye = 1.175f;
-		float eyeX = 300, eyeY = -400, eyeZ = 500;
+		float eyeX = 200, eyeY = -200, eyeZ = 350;
 		float  targetX = 0, targetY = 0, targetZ = 0;
-		float upX = 0, upY = 0, upZ = 24;
+		float upX = 0, upY = 0, upZ = 1;
 		float mdlX = 0;
 		float mdlY = 0;
 		float mdlZ = 0;
 		double rXY, rXYZ, pi = Math::Acos(-1.0);
 		bool NotDrawedStartpoint = true;
-		bool mdown = false;	//кнопка мыши нажата
-		int mdX, mdY;		//координаты нажатой мыши
-		int mX, mY;			//текущие координаты мыши
-		double angG = 2.5, angV = pi / 4; //стартовый угол обзора
-		double angleG = 0, angleV = 0;//угол для поворота обзора от нажатой мыши, горизонтальный и вертикальный
+		bool mdown = false;	//РєРЅРѕРїРєР° РјС‹С€Рё РЅР°Р¶Р°С‚Р°
+		int mdX, mdY;		//РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅР°Р¶Р°С‚РѕР№ РјС‹С€Рё
+		int mX, mY;			//С‚РµРєСѓС‰РёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РјС‹С€Рё
+		double angG = 2.5, angV = pi / 4; //СЃС‚Р°СЂС‚РѕРІС‹Р№ СѓРіРѕР» РѕР±Р·РѕСЂР°
+		double angleG = 0, angleV = 0;//СѓРіРѕР» РґР»СЏ РїРѕРІРѕСЂРѕС‚Р° РѕР±Р·РѕСЂР° РѕС‚ РЅР°Р¶Р°С‚РѕР№ РјС‹С€Рё, РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Р№ Рё РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№
 		String^ opndfileName = "";
 		String^ editCellText = "";
+		Thread ^thread;
 		GcodeData^ gdata;
 		DataTable^ table;
 		System::Windows::Forms::BindingSource^ bindingSrc1;
 		System::Windows::Forms::DataGridView^  dataGridView1;
 		System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
 		/// <summary>
-		/// Обязательная переменная конструктора.
+		/// РћР±СЏР·Р°С‚РµР»СЊРЅР°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°.
 		/// </summary>
-		//имя открываемого файла
+		//РёРјСЏ РѕС‚РєСЂС‹РІР°РµРјРѕРіРѕ С„Р°Р№Р»Р°
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
-		/// Требуемый метод для поддержки конструктора — не изменяйте 
-		/// содержимое этого метода с помощью редактора кода.
+		/// РўСЂРµР±СѓРµРјС‹Р№ РјРµС‚РѕРґ РґР»СЏ РїРѕРґРґРµСЂР¶РєРё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° вЂ” РЅРµ РёР·РјРµРЅСЏР№С‚Рµ 
+		/// СЃРѕРґРµСЂР¶РёРјРѕРµ СЌС‚РѕРіРѕ РјРµС‚РѕРґР° СЃ РїРѕРјРѕС‰СЊСЋ СЂРµРґР°РєС‚РѕСЂР° РєРѕРґР°.
 		/// </summary>
 		void InitializeComponent(void)
 		{
@@ -108,11 +111,11 @@ namespace GcodeViewer {
 			this->glControl1 = (gcnew OpenTK::GLControl());
 			this->toolStrip1 = (gcnew System::Windows::Forms::ToolStrip());
 			this->toolStripDropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
-			this->открытьToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->сохранитьToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->сохранитьКакToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->закрытьToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->выходToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->РѕС‚РєСЂС‹С‚СЊToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->СЃРѕС…СЂР°РЅРёС‚СЊToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->Р·Р°РєСЂС‹С‚СЊToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->РІС‹С…РѕРґToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->textUnderMenu = (gcnew System::Windows::Forms::TextBox());
 			this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
@@ -157,8 +160,8 @@ namespace GcodeViewer {
 			// 
 			this->toolStripDropDownButton1->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
 			this->toolStripDropDownButton1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(5) {
-				this->открытьToolStripMenuItem,
-					this->сохранитьToolStripMenuItem, this->сохранитьКакToolStripMenuItem, this->закрытьToolStripMenuItem, this->выходToolStripMenuItem1
+				this->РѕС‚РєСЂС‹С‚СЊToolStripMenuItem,
+					this->СЃРѕС…СЂР°РЅРёС‚СЊToolStripMenuItem, this->СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem, this->Р·Р°РєСЂС‹С‚СЊToolStripMenuItem, this->РІС‹С…РѕРґToolStripMenuItem1
 			});
 			this->toolStripDropDownButton1->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripDropDownButton1.Image")));
 			this->toolStripDropDownButton1->ImageTransparentColor = System::Drawing::Color::Magenta;
@@ -166,38 +169,38 @@ namespace GcodeViewer {
 			this->toolStripDropDownButton1->Size = System::Drawing::Size(29, 22);
 			this->toolStripDropDownButton1->Text = L"toolStripDropDownButton1";
 			// 
-			// открытьToolStripMenuItem
+			// РѕС‚РєСЂС‹С‚СЊToolStripMenuItem
 			// 
-			this->открытьToolStripMenuItem->Name = L"открытьToolStripMenuItem";
-			this->открытьToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->открытьToolStripMenuItem->Text = L"Открыть";
-			this->открытьToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::открытьToolStripMenuItem_Click);
+			this->РѕС‚РєСЂС‹С‚СЊToolStripMenuItem->Name = L"РѕС‚РєСЂС‹С‚СЊToolStripMenuItem";
+			this->РѕС‚РєСЂС‹С‚СЊToolStripMenuItem->Size = System::Drawing::Size(153, 22);
+			this->РѕС‚РєСЂС‹С‚СЊToolStripMenuItem->Text = L"РћС‚РєСЂС‹С‚СЊ";
+			this->РѕС‚РєСЂС‹С‚СЊToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::РѕС‚РєСЂС‹С‚СЊToolStripMenuItem_Click);
 			// 
-			// сохранитьToolStripMenuItem
+			// СЃРѕС…СЂР°РЅРёС‚СЊToolStripMenuItem
 			// 
-			this->сохранитьToolStripMenuItem->Name = L"сохранитьToolStripMenuItem";
-			this->сохранитьToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->сохранитьToolStripMenuItem->Text = L"Сохранить";
+			this->СЃРѕС…СЂР°РЅРёС‚СЊToolStripMenuItem->Name = L"СЃРѕС…СЂР°РЅРёС‚СЊToolStripMenuItem";
+			this->СЃРѕС…СЂР°РЅРёС‚СЊToolStripMenuItem->Size = System::Drawing::Size(153, 22);
+			this->СЃРѕС…СЂР°РЅРёС‚СЊToolStripMenuItem->Text = L"РЎРѕС…СЂР°РЅРёС‚СЊ";
 			// 
-			// сохранитьКакToolStripMenuItem
+			// СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem
 			// 
-			this->сохранитьКакToolStripMenuItem->Name = L"сохранитьКакToolStripMenuItem";
-			this->сохранитьКакToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->сохранитьКакToolStripMenuItem->Text = L"Сохранить как";
-			this->сохранитьКакToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::сохранитьКакToolStripMenuItem_Click);
+			this->СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem->Name = L"СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem";
+			this->СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem->Size = System::Drawing::Size(153, 22);
+			this->СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem->Text = L"РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє";
+			this->СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem_Click);
 			// 
-			// закрытьToolStripMenuItem
+			// Р·Р°РєСЂС‹С‚СЊToolStripMenuItem
 			// 
-			this->закрытьToolStripMenuItem->Name = L"закрытьToolStripMenuItem";
-			this->закрытьToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->закрытьToolStripMenuItem->Text = L"Закрыть";
+			this->Р·Р°РєСЂС‹С‚СЊToolStripMenuItem->Name = L"Р·Р°РєСЂС‹С‚СЊToolStripMenuItem";
+			this->Р·Р°РєСЂС‹С‚СЊToolStripMenuItem->Size = System::Drawing::Size(153, 22);
+			this->Р·Р°РєСЂС‹С‚СЊToolStripMenuItem->Text = L"Р—Р°РєСЂС‹С‚СЊ";
 			// 
-			// выходToolStripMenuItem1
+			// РІС‹С…РѕРґToolStripMenuItem1
 			// 
-			this->выходToolStripMenuItem1->Name = L"выходToolStripMenuItem1";
-			this->выходToolStripMenuItem1->Size = System::Drawing::Size(153, 22);
-			this->выходToolStripMenuItem1->Text = L"Выход";
-			this->выходToolStripMenuItem1->Click += gcnew System::EventHandler(this, &MainForm::выходToolStripMenuItem1_Click);
+			this->РІС‹С…РѕРґToolStripMenuItem1->Name = L"РІС‹С…РѕРґToolStripMenuItem1";
+			this->РІС‹С…РѕРґToolStripMenuItem1->Size = System::Drawing::Size(153, 22);
+			this->РІС‹С…РѕРґToolStripMenuItem1->Text = L"Р’С‹С…РѕРґ";
+			this->РІС‹С…РѕРґToolStripMenuItem1->Click += gcnew System::EventHandler(this, &MainForm::РІС‹С…РѕРґToolStripMenuItem1_Click);
 			// 
 			// textUnderMenu
 			// 
@@ -209,7 +212,7 @@ namespace GcodeViewer {
 			this->textUnderMenu->Size = System::Drawing::Size(343, 13);
 			this->textUnderMenu->TabIndex = 0;
 			this->textUnderMenu->TabStop = false;
-			this->textUnderMenu->Text = L"Загрузите комманды";
+			this->textUnderMenu->Text = L"Р—Р°РіСЂСѓР·РёС‚Рµ РєРѕРјРјР°РЅРґС‹";
 			// 
 			// saveFileDialog1
 			// 
@@ -314,7 +317,7 @@ namespace GcodeViewer {
 			this->Column1->DividerWidth = 2;
 			this->Column1->FillWeight = 256;
 			this->Column1->Frozen = true;
-			this->Column1->HeaderText = L"Команды";
+			this->Column1->HeaderText = L"РљРѕРјР°РЅРґС‹";
 			this->Column1->MinimumWidth = 256;
 			this->Column1->Name = L"Column1";
 			this->Column1->Resizable = System::Windows::Forms::DataGridViewTriState::False;
@@ -345,57 +348,31 @@ namespace GcodeViewer {
 
 		}
 #pragma endregion
-		//обработка нажатия кнопки меню "Сохранить как"
-	private: System::Void сохранитьКакToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+		//РѕР±СЂР°Р±РѕС‚РєР° РЅР°Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё РјРµРЅСЋ "РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє"
+	private: System::Void СЃРѕС…СЂР°РЅРёС‚СЊРљР°РєToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 		this->saveFileDialog1->FileName = opndfileName;
 		if (System::Windows::Forms::DialogResult::OK == this->saveFileDialog1->ShowDialog())
-			this->textUnderMenu->Text = this->saveFileDialog1->FileName + " типа сохранен";
+			this->textUnderMenu->Text = this->saveFileDialog1->FileName + " С‚РёРїР° СЃРѕС…СЂР°РЅРµРЅ";
 		else
 			this->Text = L"GcodeViewer";
 	}
 
-			 //обработка нажатия кнопки меню "открыть"
-	private: System::Void открытьToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+			 //РѕР±СЂР°Р±РѕС‚РєР° РЅР°Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё РјРµРЅСЋ "РѕС‚РєСЂС‹С‚СЊ"
+	private: System::Void РѕС‚РєСЂС‹С‚СЊToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 		if (System::Windows::Forms::DialogResult::OK == this->openFileDialog1->ShowDialog()) {
 			opndfileName = this->openFileDialog1->FileName;
-			if (gdata->loadFile(opndfileName)) {
-				this->textUnderMenu->Text = " открыт:" + opndfileName;
-				this->dataGridView1->Rows->Clear();
-				//		this->table->
-				//		this->dataGridView1->DataSource = gdata->commands;
-
-				this->dataGridView1->RowCount = gdata->commands->Count;
-				int rowNumber = 1;
-				System::Collections::IEnumerator^ myEnum = safe_cast<System::Collections::IEnumerable^>(dataGridView1->Rows)->GetEnumerator();
-				myEnum->Reset();
-				while (myEnum->MoveNext())
-				{
-					DataGridViewRow^ row = safe_cast<DataGridViewRow^>(myEnum->Current);
-					row->HeaderCell->Value = String::Format(L"{0}", rowNumber);
-					row->SetValues(gdata->commands[rowNumber - 1]);
-					if (rowNumber >= gdata->commands->Count)
-						break;
-					rowNumber = rowNumber + 1;
-				}
-			}
-			else {
-				this->textUnderMenu->Text = "не открытся" + opndfileName;
-			}
+			ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::openFileProccess);
+			thread = gcnew Thread(ts);
+			thread->Start();
 		}
-		textUnderMenu->Text = "Границы: X:: " + gdata->minX + " : " + gdata->maxX + " Y:: "
-			+ gdata->minY + " : " + gdata->maxY + " Z:: " + gdata->minZ + " : " + gdata->maxZ;
-		mdlX = (gdata->minX + gdata->maxX) / 2;
-		mdlY = (gdata->minY + gdata->maxY) / 2;
-		mdlZ = (gdata->minZ + gdata->maxZ) / 2;
-		targetX = mdlX;
-		targetY = mdlY;
-		targetZ = mdlZ;
+		
+		
 	}
-			 //обработка нажатия кнопки меню "выход"
-	private: System::Void выходToolStripMenuItem1_Click(System::Object^  sender, System::EventArgs^  e) {
+			 //РѕР±СЂР°Р±РѕС‚РєР° РЅР°Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё РјРµРЅСЋ "РІС‹С…РѕРґ"
+	private: System::Void РІС‹С…РѕРґToolStripMenuItem1_Click(System::Object^  sender, System::EventArgs^  e) {
 		this->Close();
 	}
-			 //обработка изменения размеров окна
+			 //РѕР±СЂР°Р±РѕС‚РєР° РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂРѕРІ РѕРєРЅР°
 	private: System::Void MainForm_Resize(System::Object^  sender, System::EventArgs^  e) {
 		this->glControl1->Size = System::Drawing::Size(this->Width - 380, this->Height - 92);
 		this->dataGridView1->Size = System::Drawing::Size(356, this->Height - 109);
@@ -403,36 +380,36 @@ namespace GcodeViewer {
 
 	}
 
-			 //реакция на изменения размеров графического компонента
+			 //СЂРµР°РєС†РёСЏ РЅР° РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂРѕРІ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РєРѕРјРїРѕРЅРµРЅС‚Р°
 	private: System::Void glControl1_SizeChanged(System::Object^  sender, System::EventArgs^  e) {
-		GL::MatrixMode(MatrixMode::Projection); //работаем с трехмерной проекцией
-		GL::Ortho(-1, 1, -1, 1, -1, 1); //Указываем систему координат
-		GL::Viewport(0, 0, glControl1->Width, glControl1->Height - 1); // Использовать всю поверхность GLControl под рисование															  
-		   //Матрица отвечающая за фруструм
+		GL::MatrixMode(MatrixMode::Projection); //СЂР°Р±РѕС‚Р°РµРј СЃ С‚СЂРµС…РјРµСЂРЅРѕР№ РїСЂРѕРµРєС†РёРµР№
+		GL::Ortho(-1, 1, -1, 1, -1, 1); //РЈРєР°Р·С‹РІР°РµРј СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚
+		GL::Viewport(0, 0, glControl1->Width, glControl1->Height - 1); // РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІСЃСЋ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ GLControl РїРѕРґ СЂРёСЃРѕРІР°РЅРёРµ															  
+		   //РњР°С‚СЂРёС†Р° РѕС‚РІРµС‡Р°СЋС‰Р°СЏ Р·Р° С„СЂСѓСЃС‚СЂСѓРј
 		Matrix4 perspective = Matrix4::CreatePerspectiveFieldOfView((float)(90 * Math::Asin(1.0f) / 90), (float)glControl1->Width / glControl1->Height, (float)0.05, (float)2000);
 		GL::LoadMatrix(perspective);
 		GL::ClearColor(Color::WhiteSmoke);
 		Console::Write(" Resize GL ");
 	}
-			 //обработка события CellBeginEdit
+			 //РѕР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёСЏ CellBeginEdit
 	private: System::Void dataGridView1_CellBeginEdit(System::Object^  sender, System::Windows::Forms::DataGridViewCellCancelEventArgs^  e) {
 	}
 
-			 //обработка события CellEnter
+			 //РѕР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёСЏ CellEnter
 	private: System::Void dataGridView1_CellEnter(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
 		this->toolStripStatusLabel1->Text = "" + this->dataGridView1->CurrentCell->RowIndex + ":" +
 			this->dataGridView1->CurrentCell->ColumnIndex +
 			"BeginEdit:" + this->dataGridView1->BeginEdit(true);
 	}
-			 //обработка события CellLeave для строки таблицы
+			 //РѕР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёСЏ CellLeave РґР»СЏ СЃС‚СЂРѕРєРё С‚Р°Р±Р»РёС†С‹
 	private: System::Void dataGridView1_CellLeave(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
 		this->dataGridView1->EndEdit();
 	}
-			 //обработка события нажатия Любой кнопки по таблице
+			 //РѕР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёСЏ РЅР°Р¶Р°С‚РёСЏ Р›СЋР±РѕР№ РєРЅРѕРїРєРё РїРѕ С‚Р°Р±Р»РёС†Рµ
 	private: System::Void dataGridView1_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
 
 	}
-			 //обработка события нажатия Любой кнопки по таблице
+			 //РѕР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёСЏ РЅР°Р¶Р°С‚РёСЏ Р›СЋР±РѕР№ РєРЅРѕРїРєРё РїРѕ С‚Р°Р±Р»РёС†Рµ
 	private: System::Void dataGridView1_PreviewKeyDown(System::Object^  sender, System::Windows::Forms::PreviewKeyDownEventArgs^  e) {
 		if (this->dataGridView1->SelectedCells->Count != 0) {
 			switch (e->KeyCode) {
@@ -453,13 +430,13 @@ namespace GcodeViewer {
 		}
 	}
 
-			 //обработка прокрутки колеса мыши по компоненту Control1
+			 //РѕР±СЂР°Р±РѕС‚РєР° РїСЂРѕРєСЂСѓС‚РєРё РєРѕР»РµСЃР° РјС‹С€Рё РїРѕ РєРѕРјРїРѕРЅРµРЅС‚Сѓ Control1
 	private: System::Void glControl1_MouseWheel(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 		double dx = 0, dy = 0;
 		rXY = Math::Sqrt((Math::Pow(eyeX - targetX, 2) + Math::Pow(eyeY - targetY, 2)));
 		dx = ((double)rXY*(mX - (double)glControl1->Width / 2) / (double)glControl1->Width);
 		dy = ((double)rXY*(mY - (double)glControl1->Height / 2) / (double)glControl1->Height);
-		if (e->Delta > 0) {	//от себя - умножаем на множитель
+		if (e->Delta > 0) {	//РѕС‚ СЃРµР±СЏ - СѓРјРЅРѕР¶Р°РµРј РЅР° РјРЅРѕР¶РёС‚РµР»СЊ
 	//		changeTarget(-dx,-dy);
 			eyeX = (eyeX - targetX) * multiplyEye + targetX;
 			eyeY = (eyeY - targetY) * multiplyEye + targetY;
@@ -467,7 +444,7 @@ namespace GcodeViewer {
 
 
 		}
-		else {				// на себя - делим на множитель
+		else {				// РЅР° СЃРµР±СЏ - РґРµР»РёРј РЅР° РјРЅРѕР¶РёС‚РµР»СЊ
 	//	//	changeTarget(dx, dy);
 			eyeX = (eyeX - targetX) / multiplyEye + targetX;
 			eyeY = (eyeY - targetY) / multiplyEye + targetY;
@@ -482,29 +459,30 @@ namespace GcodeViewer {
 					 eyeY = (float)(rXY*Math::Cos(startAngG)+ targetY);
 					 */
 	}
-			 //обработка тика таймера
+			 //РѕР±СЂР°Р±РѕС‚РєР° С‚РёРєР° С‚Р°Р№РјРµСЂР°
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 		glControl1->Invalidate();
+		fileIsOpenNow();
 	}
 	private: System::Void glControl1_Load(System::Object^  sender, System::EventArgs^  e) {
 		glLoaded = true;
 		GL::ClearColor(Color::WhiteSmoke);
 		GL::Enable(EnableCap::DepthTest);
 
-		GL::Viewport(0, 0, glControl1->Width, glControl1->Height - 1); // Использовать всю поверхность GLControl под рисование
-		GL::MatrixMode(MatrixMode::Projection); //работаем с трехмерной проекцией
-		GL::Ortho(-1, 1, -1, 1, -1, 1); //Указываем систему координат
+		GL::Viewport(0, 0, glControl1->Width, glControl1->Height - 1); // РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІСЃСЋ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ GLControl РїРѕРґ СЂРёСЃРѕРІР°РЅРёРµ
+		GL::MatrixMode(MatrixMode::Projection); //СЂР°Р±РѕС‚Р°РµРј СЃ С‚СЂРµС…РјРµСЂРЅРѕР№ РїСЂРѕРµРєС†РёРµР№
+		GL::Ortho(-1, 1, -1, 1, -1, 1); //РЈРєР°Р·С‹РІР°РµРј СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚
 
-		//Матрица отвечающая за фруструм
+		//РњР°С‚СЂРёС†Р° РѕС‚РІРµС‡Р°СЋС‰Р°СЏ Р·Р° С„СЂСѓСЃС‚СЂСѓРј
 		Matrix4 perspective = Matrix4::CreatePerspectiveFieldOfView((float)(90 * Math::Asin(1.0f) / 90), (float)glControl1->Width / glControl1->Height, (float)0.05, (float)2000);
 		GL::LoadMatrix(perspective);
-		GL::ClearColor(Color::WhiteSmoke); //указываем цвет фона
-		//Здесь мы задаем нашу камеру в точке, 
-		//направление взгляда по началу в центр системы координат(0, 0, 0).
-		//Ориентация такая, что ось OZ направлена вверх.
+		GL::ClearColor(Color::WhiteSmoke); //СѓРєР°Р·С‹РІР°РµРј С†РІРµС‚ С„РѕРЅР°
+		//Р—РґРµСЃСЊ РјС‹ Р·Р°РґР°РµРј РЅР°С€Сѓ РєР°РјРµСЂСѓ РІ С‚РѕС‡РєРµ, 
+		//РЅР°РїСЂР°РІР»РµРЅРёРµ РІР·РіР»СЏРґР° РїРѕ РЅР°С‡Р°Р»Сѓ РІ С†РµРЅС‚СЂ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚(0, 0, 0).
+		//РћСЂРёРµРЅС‚Р°С†РёСЏ С‚Р°РєР°СЏ, С‡С‚Рѕ РѕСЃСЊ OZ РЅР°РїСЂР°РІР»РµРЅР° РІРІРµСЂС….
 		changeModelView();
 	}
-			 //обработка события перерисовки, происходит по необходимости, изменении размеров окна и прочее
+			 //РѕР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёСЏ РїРµСЂРµСЂРёСЃРѕРІРєРё, РїСЂРѕРёСЃС…РѕРґРёС‚ РїРѕ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё, РёР·РјРµРЅРµРЅРёРё СЂР°Р·РјРµСЂРѕРІ РѕРєРЅР° Рё РїСЂРѕС‡РµРµ
 	private: System::Void glControl1_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) {
 		if (!glLoaded)
 			return;
@@ -513,10 +491,11 @@ namespace GcodeViewer {
 		drawPolyLines();
 
 		drawOXYZ(mdlX, mdlY, mdlZ);
+		changeModelView();
 		glControl1->SwapBuffers();
 	}
 
-			 //обработка перемещения мыши по компоненту Control1
+			 //РѕР±СЂР°Р±РѕС‚РєР° РїРµСЂРµРјРµС‰РµРЅРёСЏ РјС‹С€Рё РїРѕ РєРѕРјРїРѕРЅРµРЅС‚Сѓ Control1
 	private: System::Void glControl1_MouseMove(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 		mX = e->X;
 		mY = e->Y;
@@ -533,7 +512,7 @@ namespace GcodeViewer {
 			mdY = mY;
 		}
 	}
-			 //кнопка мыши нажата
+			 //РєРЅРѕРїРєР° РјС‹С€Рё РЅР°Р¶Р°С‚Р°
 	private: System::Void glControl1_MouseDown(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 		if (!mdown) {
 			mdX = e->X;
@@ -542,12 +521,12 @@ namespace GcodeViewer {
 		}
 		mdown = true;
 	}
-			 //кнопка мыши отжата
+			 //РєРЅРѕРїРєР° РјС‹С€Рё РѕС‚Р¶Р°С‚Р°
 	private: System::Void glControl1_MouseUp(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 		mdown = false;
 
 	}
-			 //меняем точку фокуса камеры (фруструма)
+			 //РјРµРЅСЏРµРј С‚РѕС‡РєСѓ С„РѕРєСѓСЃР° РєР°РјРµСЂС‹ (С„СЂСѓСЃС‚СЂСѓРјР°)
 	/*		 void changeTarget(double dx, double dy) {
 				 double angScr = Math::Atan2(dy, dx);
 				 double coof=0.5;
@@ -555,20 +534,20 @@ namespace GcodeViewer {
 				 targetY = targetY - coof*(dx * Math::Cos(angG - angScr) + dy * Math::Sin(angG - angScr));
 				 changeModelView();
 			 }
-	*/		 //меняем/перезагружаем точку обзора
+	*/		 //РјРµРЅСЏРµРј/РїРµСЂРµР·Р°РіСЂСѓР¶Р°РµРј С‚РѕС‡РєСѓ РѕР±Р·РѕСЂР°
 			 void changeModelView() {
 				 modelview = Matrix4::LookAt(eyeX, eyeY, eyeZ, targetX, targetY, targetZ, upX, upY, upZ);
 				 GL::MatrixMode(MatrixMode::Modelview);
 				 GL::LoadMatrix(modelview);
 			 }
-			 //меняем точку обзора по горизонтали (вправо/влево)
+			 //РјРµРЅСЏРµРј С‚РѕС‡РєСѓ РѕР±Р·РѕСЂР° РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё (РІРїСЂР°РІРѕ/РІР»РµРІРѕ)
 			 void  rotateG(double U) {
 				 rXY = Math::Sqrt((Math::Pow(eyeX - targetX, 2) + Math::Pow(eyeY - targetY, 2)));
 				 angG = angG + U;
 				 eyeX = (float)(rXY*Math::Sin(angG) + targetX);
 				 eyeY = (float)(rXY*Math::Cos(angG) + targetY);
 			 }
-			 //меняем точку обзора по вертикали (вверх/вниз)
+			 //РјРµРЅСЏРµРј С‚РѕС‡РєСѓ РѕР±Р·РѕСЂР° РїРѕ РІРµСЂС‚РёРєР°Р»Рё (РІРІРµСЂС…/РІРЅРёР·)
 			 void  rotateV(double U) {
 				 rXY = Math::Sqrt((Math::Pow(eyeX - targetX, 2) + Math::Pow(eyeY - targetY, 2)));
 				 rXYZ = Math::Sqrt((Math::Pow(eyeX - targetX, 2) + Math::Pow(eyeY - targetY, 2) + Math::Pow(eyeZ, 2)));
@@ -578,11 +557,11 @@ namespace GcodeViewer {
 				 eyeZ = (float)(rXYZ*Math::Sin(angV));
 
 			 }
-			 //рисуем обозначение системы координат
+			 //СЂРёСЃСѓРµРј РѕР±РѕР·РЅР°С‡РµРЅРёРµ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚
 			 void drawOXYZ(float x, float y, float z) {
 				 GL::LineWidth(0.7f);
-				 GL::Color3(Color::Gray); //цвет, которым будем рисовать
-				 GL::Begin(PrimitiveType::Lines); //Что будем рисовать: линии
+				 GL::Color3(Color::Gray); //С†РІРµС‚, РєРѕС‚РѕСЂС‹Рј Р±СѓРґРµРј СЂРёСЃРѕРІР°С‚СЊ
+				 GL::Begin(PrimitiveType::Lines); //Р§С‚Рѕ Р±СѓРґРµРј СЂРёСЃРѕРІР°С‚СЊ: Р»РёРЅРёРё
 				 GL::Vertex3(w + x, y, z);	GL::Vertex3(w + x, w + y, z);
 				 GL::Vertex3(w + x, w + y, z);	GL::Vertex3(x, w + y, z);
 				 GL::Vertex3(w + x, w + y, z);	GL::Vertex3(w + x, w + y, w + z);
@@ -595,8 +574,8 @@ namespace GcodeViewer {
 				 GL::End();
 				 GL::LineWidth(1.5f);
 				 //OX
-				 GL::Color3(Color::Green); //цвет, которым будем рисовать
-				 GL::Begin(PrimitiveType::Lines); //Что будем рисовать: линии
+				 GL::Color3(Color::Green); //С†РІРµС‚, РєРѕС‚РѕСЂС‹Рј Р±СѓРґРµРј СЂРёСЃРѕРІР°С‚СЊ
+				 GL::Begin(PrimitiveType::Lines); //Р§С‚Рѕ Р±СѓРґРµРј СЂРёСЃРѕРІР°С‚СЊ: Р»РёРЅРёРё
 				 GL::Vertex3(x, y, z); GL::Vertex3(x + 15, y, z);
 				 GL::End();
 				 //OY
@@ -610,14 +589,14 @@ namespace GcodeViewer {
 				 GL::Vertex3(x, y, z); GL::Vertex3(x, y, z + 15);
 				 GL::End();
 			 }
-			 //рисуем линии
+			 //СЂРёСЃСѓРµРј Р»РёРЅРёРё
 			 void drawPolyLines() {
 				 if (gdata->polylines != nullptr) {
-					 //рисуем стартовую точку
+					 //СЂРёСЃСѓРµРј СЃС‚Р°СЂС‚РѕРІСѓСЋ С‚РѕС‡РєСѓ
 					 NotDrawedStartpoint = true;
 					 for (int i = 0; i < gdata->polylines->Count && NotDrawedStartpoint; i++) {
-						 if (gdata->polylines[i]->x != nullptr) {
-							 for (int j = 0; j < gdata->polylines[i]->x->Count; j++) {
+						 if (gdata->polylines[i]->z != nullptr) {
+							 for (int j = 0; j < gdata->polylines[i]->z->Count; j++) {
 								 if (NotDrawedStartpoint) {
 									 drawStartPoint(gdata->polylines[i]->x[j], gdata->polylines[i]->y[j], gdata->polylines[i]->z[j]);
 									 NotDrawedStartpoint = false;
@@ -626,7 +605,7 @@ namespace GcodeViewer {
 							 }
 						 }
 					 }
-					 //задаем начальные параметры отрисовки линий
+					 //Р·Р°РґР°РµРј РЅР°С‡Р°Р»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РѕС‚СЂРёСЃРѕРІРєРё Р»РёРЅРёР№
 					 float x = 0, y = 0, z = 0;
 					 GL::LineWidth(1.0f);
 					 GL::Color3(Color::Red);
@@ -634,13 +613,13 @@ namespace GcodeViewer {
 					 GL::Vertex3(x, y, z);
 
 					 for (int i = 0; i < gdata->polylines->Count; i++) {
-						 //берем цвет, указанный в классе полилиний (он отражает теоретический уровень тревожности текущей операции)
+						 //Р±РµСЂРµРј С†РІРµС‚, СѓРєР°Р·Р°РЅРЅС‹Р№ РІ РєР»Р°СЃСЃРµ РїРѕР»РёР»РёРЅРёР№ (РѕРЅ РѕС‚СЂР°Р¶Р°РµС‚ С‚РµРѕСЂРµС‚РёС‡РµСЃРєРёР№ СѓСЂРѕРІРµРЅСЊ С‚СЂРµРІРѕР¶РЅРѕСЃС‚Рё С‚РµРєСѓС‰РµР№ РѕРїРµСЂР°С†РёРё)
 						 GL::Color3(Color::FromArgb(gdata->polylines[i]->red,
 							 gdata->polylines[i]->green, gdata->polylines[i]->blue));
-						 //			 GL::Vertex3(x, y, z);	//стартовая точка каждой линии
-						 if (gdata->polylines[i]->x != nullptr) {
+						 //			 GL::Vertex3(x, y, z);	//СЃС‚Р°СЂС‚РѕРІР°СЏ С‚РѕС‡РєР° РєР°Р¶РґРѕР№ Р»РёРЅРёРё
+						 if (gdata->polylines[i]->z != nullptr) {
 
-							 for (int j = 0; j < gdata->polylines[i]->x->Count; j++) {
+							 for (int j = 0; j < gdata->polylines[i]->z->Count; j++) {
 								 x = gdata->polylines[i]->x[j];
 								 y = gdata->polylines[i]->y[j];
 								 z = gdata->polylines[i]->z[j];
@@ -660,7 +639,7 @@ namespace GcodeViewer {
 					 //		 Console::Write(" gdata->polylines is nulptr ");
 				 }
 			 }
-			 //рисуем стартовое перекрестие (квадрат)
+			 //СЂРёСЃСѓРµРј СЃС‚Р°СЂС‚РѕРІРѕРµ РїРµСЂРµРєСЂРµСЃС‚РёРµ (РєРІР°РґСЂР°С‚)
 			 void drawStartPoint(float x, float y, float z) {
 				 GL::LineWidth(1.5f);
 				 GL::Color3(Color::Black);
@@ -669,6 +648,42 @@ namespace GcodeViewer {
 				 GL::Vertex3(x + 3, y, z); GL::Vertex3(x, y - 3, z);
 				 GL::End();
 			 }
+			 System::Void MainForm::openFileProccess() {
+				 if (gdata->loadFile(opndfileName)) {
+					 fileisopen = true;
+				 }
+				 else {
+					 //		 this->textUnderMenu->Text = "Г­ГҐ Г®ГІГЄГ°Г»ГІГ±Гї" + opndfileName;
+				 }
 
+			 }
+			 void fileIsOpenNow() {
+				 if (fileisopen) {
+					 this->textUnderMenu->Text = " РѕС‚РєСЂС‹С‚:" + opndfileName;
+					 this->dataGridView1->Rows->Clear();
+					 this->dataGridView1->RowCount = gdata->commands->Count;
+					 int rowNumber = 1;
+					 System::Collections::IEnumerator^ myEnum = safe_cast<System::Collections::IEnumerable^>(dataGridView1->Rows)->GetEnumerator();
+					 myEnum->Reset();
+					 while (myEnum->MoveNext())
+					 {
+						 DataGridViewRow^ row = safe_cast<DataGridViewRow^>(myEnum->Current);
+						 row->HeaderCell->Value = String::Format(L"{0}", rowNumber);
+						 row->SetValues(gdata->commands[rowNumber - 1]);
+						 if (rowNumber >= gdata->commands->Count)
+							 break;
+						 rowNumber = rowNumber + 1;
+					 }
+					 textUnderMenu->Text = "Р“СЂР°РЅРёС†С‹: X:: " + gdata->minX + " : " + gdata->maxX + " Y:: "
+						 + gdata->minY + " : " + gdata->maxY + " Z:: " + gdata->minZ + " : " + gdata->maxZ;
+					 mdlX = (gdata->minX + gdata->maxX) / 2;
+					 mdlY = (gdata->minY + gdata->maxY) / 2;
+					 mdlZ = (gdata->minZ + gdata->maxZ) / 2;
+					 targetX = mdlX;
+					 targetY = mdlY;
+					 targetZ = gdata->minZ;
+					 fileisopen = false;
+				 }
+			 }
 	};
 }
