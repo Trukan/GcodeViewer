@@ -1,0 +1,99 @@
+  GcodeViewer.MainForm.resources - Embedded, ContainedInManifestFile, 
+ImageRuntimeVersion: v4.0.30319
+Assembly GcodeViewer, Version=0.0.*, Culture=Инвариантный язык (Инвариантная страна): 
+	hash=SHA1, flags=PublicKey
+Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4: 
+	hash=None, flags=None
+Assembly OpenTK.GLControl, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4: 
+	hash=None, flags=None
+Assembly System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a: 
+	hash=None, flags=None
+Assembly System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a: 
+	hash=None, flags=None
+Class GData.Polyline: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+    Void .ctor(Int32, System.Collections.Generic.List`1[System.Single], System.Collections.Generic.List`1[System.Single], System.Collections.Generic.List`1[System.Single]): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(Int32): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Interfaces:
+    System.IDisposable
+  Fields:
+    GData.GState gstate : Public
+    Single feed : Public
+    GData.MState mstate : Public
+    Int32 speedrate : Public
+    Int32 n : Public
+    System.Collections.Generic.List`1[System.Single] x : Public
+    System.Collections.Generic.List`1[System.Single] y : Public
+    System.Collections.Generic.List`1[System.Single] z : Public
+    Int32 red : Public
+    Int32 green : Public
+    Int32 blue : Public
+    Single stickLimit : Public, Static
+    Single feedLimit : Public, Static
+  Methods:
+    update(): PrivateScope, Public, HideBySig
+    stickToColor(): PrivateScope, Public, HideBySig
+    op_Division(Polyline, Single): PrivateScope, Public, Static, HideBySig, SpecialName
+    setColor(Polyline, Int32, Int32, Int32): PrivateScope, Public, Static, HideBySig
+    Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
+Class GData.GcodeData: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Interfaces:
+    System.IDisposable
+  Fields:
+    System.Collections.Generic.List`1[System.Int32] errorRows : Public
+    System.Collections.Generic.List`1[System.String] commands : Public
+    System.Collections.Generic.List`1[GData.Polyline] polylines : Public
+    Single minX : Public
+    Single maxX : Public
+    Single minY : Public
+    Single maxY : Public
+    Single minZ : Public
+    Single maxZ : Public
+  Properties:
+    System.String str [Int32] 'get set' : 
+  Methods:
+    get_str(Int32): PrivateScope, Public, HideBySig, SpecialName
+    set_str(Int32, String): PrivateScope, Public, HideBySig, SpecialName
+    loadFile(String): PrivateScope, Public, HideBySig
+    checkMinMax(): PrivateScope, Public, HideBySig
+    reset(): PrivateScope, Public, HideBySig
+    tranlate(List`1): PrivateScope, Public, HideBySig
+    Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
+Struct GData.GState: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.Enum
+  Fields:
+    Int32 value__ : Public, SpecialName, RTSpecialName
+    GData.GState None = -1 : Public, Static, Literal, HasDefault
+    GData.GState NotLoad = 0 : Public, Static, Literal, HasDefault
+    GData.GState LineRun = 1 : Public, Static, Literal, HasDefault
+    GData.GState CircClockwise = 2 : Public, Static, Literal, HasDefault
+    GData.GState CircCntrClockwise = 3 : Public, Static, Literal, HasDefault
+    GData.GState NewNullCoor = 10 : Public, Static, Literal, HasDefault
+    GData.GState SurfaceXY = 17 : Public, Static, Literal, HasDefault
+    GData.GState SurfaceZX = 18 : Public, Static, Literal, HasDefault
+    GData.GState SurfaceYZ = 19 : Public, Static, Literal, HasDefault
+Struct GData.MState: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.Enum
+  Fields:
+    Int32 value__ : Public, SpecialName, RTSpecialName
+    GData.MState None = -1 : Public, Static, Literal, HasDefault
+    GData.MState PreStart = 0 : Public, Static, Literal, HasDefault
+    GData.MState StopNoReset = 2 : Public, Static, Literal, HasDefault
+    GData.MState StartRotateClockwise = 3 : Public, Static, Literal, HasDefault
+    GData.MState StartRotateCntrClockwise = 4 : Public, Static, Literal, HasDefault
+    GData.MState StopRotate = 5 : Public, Static, Literal, HasDefault
+    GData.MState ChangeInsrtument = 6 : Public, Static, Literal, HasDefault
+    GData.MState StopWithReset = 30 : Public, Static, Literal, HasDefault
+Class GcodeViewer.MainForm: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName

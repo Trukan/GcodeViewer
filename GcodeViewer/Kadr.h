@@ -52,7 +52,7 @@ namespace GData {
 
 		static	bool isGoodNumber(wchar_t ch);
 		//интерполирует сектор круга в списки координат
-		static	bool interpolate(float lx, float ly, float lz, float x, float y, float i, float j,
+		static	bool interpolateClockwise(float lx, float ly, float lz, float x, float y, float i, float j,
 			Generic::List<float>^ listx, Generic::List<float>^ listy, Generic::List<float>^ listz);
 
 		static	bool isGoodLetter(wchar_t);
