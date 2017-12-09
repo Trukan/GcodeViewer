@@ -59,7 +59,7 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 				return false;
 			curGstate = safe_cast<GState>(paramInt);
 			bg = true;
-//			Console::Write("G" + paramInt);
+			Console::Write("G" + paramInt);
 			break;
 		case 'X':
 			if (!getFloat(str, 'X', tmpindex, curindex))
@@ -110,13 +110,13 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 			}
 			m = safe_cast<MState>(paramInt);
 			bm = true;
-//			Console::Write("M" + paramInt);
+			Console::Write("M" + paramInt);
 			break;
 			//номер инструмента
 		case 'T':
 			if (!getInt(str, paramInt, tmpindex, curindex))
 				return false;
-//			Console::Write("T" + paramInt);
+			Console::Write("T" + paramInt);
 			break;
 		default:	//обработка нерегламентированных (ошибочных) значений
 			Console::WriteLine("Wrong Symbol \"" + str + "\":" + str[curindex] + " from tmpindex:" + tmpindex + "curindex:" + curindex);
@@ -143,10 +143,16 @@ bool Kadr::getPolyline(String^ str, Polyline^ %pl)
 				//проверим, все ли параметры на месте дл€ Kруговой интерпол€ции (только дл€ движени€ по часовой стрелке)
 				if (curGstate == GState::CircClockwise && ((bi&&bj&&bx&&by) || (bj&&bk&&by&&bz) || (bk&&bi&&bz&&bx))) {
 					if (bi&&bj&&bx&&by) {
-						interpolateClockwise(Kadr::lx, Kadr::ly, Kadr::lz, Kadr::x, Kadr::y, Kadr::i, Kadr::j, tpl->x, tpl->y, tpl->z);
+						interpolate(Kadr::lx, Kadr::ly, Kadr::lz, Kadr::x, Kadr::y, Kadr::i, Kadr::j, tpl->x, tpl->y, tpl->z);
 						lx = tpl->x[tpl->x->Count - 1];
 						ly = tpl->y[tpl->y->Count - 1];
 						lz = tpl->z[tpl->z->Count - 1];
+						/*	Console::Write("\n\n");
+							for (int ii = 0; ii < tpl->x->Count; ii=ii+10)
+							{
+								Console::Write(tpl->x[ii] + ":" + tpl->y[ii]+ "  ");
+							}
+						*/
 					}
 					if (bj&&bk&&by&&bz) {
 
@@ -239,6 +245,8 @@ String ^ Kadr::getNumeric(String ^str, int startIndex, int &backlastindex)
 	// » ( символ €вл€етс€ цифрой »Ћ» ( (  символ €вл€етс€ точкой ) »— Ћё„јёў≈≈_»Ћ» число в целом уже начиналось с точки) )
 	//последн€€ проверка дл€ определени€ двух точек в числе
 	while (end < str->Length && (((str[end] == '.') && (!wasdot)) ^ Kadr::isGoodNumber(str[end]))) {
+		//while (end < str->Length && !Char::IsWhiteSpace(str[end]) && !(str[end] == 'Y') && !(str[end] == 'Z')
+		//	&& !(str[end] == 'F') && !(str[end] == 'S') && (((str[end] == '.') ^ wasdot) || Char::IsDigit(str[end]))) {
 		if (str[end] == '.') wasdot = true;
 		end++;
 	}
@@ -323,17 +331,17 @@ bool Kadr::getFloat(String ^str, wchar_t param, int startIndex, int &backlastind
 	case 'X':
 		x = result;
 		bx = true;
-//		Console::Write("X" + x);
+		Console::Write("X" + x);
 		break;
 	case 'Y':
 		y = result;
 		by = true;
-//		Console::Write("Y" + y);
+		Console::Write("Y" + y);
 		break;
 	case 'Z':
 		z = result;
 		bz = true;
-//		Console::Write("Z" + z);
+		Console::Write("Z" + z);
 		break;
 		//параметр команды
 //	case 'P':	
@@ -342,7 +350,7 @@ bool Kadr::getFloat(String ^str, wchar_t param, int startIndex, int &backlastind
 			if (curGstate != GState::None)
 				feedrate = result;
 			bf = true;
-//			Console::Write("F" + feedrate);
+			Console::Write("F" + feedrate);
 			break;
 		}
 		else {
@@ -360,19 +368,19 @@ bool Kadr::getFloat(String ^str, wchar_t param, int startIndex, int &backlastind
 	case 'I':
 		i = result;
 		bi = true;
-//		Console::Write("I" + i);
+		Console::Write("I" + i);
 		break;
 		//ѕараметр дуги при круговой интерпол€ции. »нкрементальное рассто€ние от начальной точки до центра дуги по оси Y
 	case 'J':
 		j = result;
 		bj = true;
-//		Console::Write("J" + j);
+		Console::Write("J" + j);
 		break;
 		//ѕараметр дуги при круговой интерпол€ции. »нкрементальное рассто€ние дуги по оси Z.
 	case 'K':
 		k = result;
 		bk = true;
-//		Console::Write("K" + k);
+		Console::Write("K" + k);
 		break;
 	default:	//обработка нерегламентированных (ошибочных) значений
 		Console::WriteLine(" wrong param for get result \"" + str + "\" param: " + param + ".");
@@ -406,7 +414,7 @@ bool Kadr::isGoodNumber(wchar_t ch) {
 	return res;
 }
 //интерполирует сектор круга в списки координат
-bool Kadr::interpolateClockwise(float lx, float ly, float lz, float x, float y, float i, float j,
+bool Kadr::interpolate(float lx, float ly, float lz, float x, float y, float i, float j,
 	Generic::List<float>^ listx, Generic::List<float>^ listy, Generic::List<float>^ listz) {
 	double A = 0;	//начальный угол в координатной плоскости в радианах
 	double dA = 0;	//обсчитываемый угол относительно начального угла
