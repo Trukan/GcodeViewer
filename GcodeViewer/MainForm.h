@@ -26,6 +26,8 @@ namespace GcodeViewer {
 		{
 			InitializeComponent();
 			this->gdata = gcnew GcodeData();
+			ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::openFileProccess);
+			thread = gcnew Thread(ts);
 			this->bindingSrc1 = gcnew System::Windows::Forms::BindingSource;
 			this->table = gcnew DataTable;
 			//
@@ -195,6 +197,8 @@ namespace GcodeViewer {
 			this->CloseMenuItem->Name = L"CloseMenuItem";
 			this->CloseMenuItem->Size = System::Drawing::Size(153, 22);
 			this->CloseMenuItem->Text = L"Закрыть";
+			this->CloseMenuItem->Click += gcnew System::EventHandler(this, &MainForm::CloseMenuItem_Click);
+
 			// 
 			// ExitMenuItem
 			// 
@@ -351,6 +355,7 @@ namespace GcodeViewer {
 #pragma endregion
 		//обработка нажатия кнопки меню "Сохранить"
 	private: System::Void SaveFileMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+		if (File::Exists(opndfileName)) {
 			StreamWriter ^sw = gcnew StreamWriter(opndfileName);
 			for (int i = 0; i < dataGridView1->Rows->Count; i++)
 			{
@@ -359,6 +364,7 @@ namespace GcodeViewer {
 			sw->Close();
 			delete sw;
 			this->toolStripStatusLabel1->Text = "файл " + opndfileName + " сохранен";
+		}
 	}
 		//обработка нажатия кнопки меню "Сохранить как"
 	private: System::Void SaveAsFileMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -383,11 +389,23 @@ namespace GcodeViewer {
 	private: System::Void OpenFileMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 		if (System::Windows::Forms::DialogResult::OK == this->openFileDialog1->ShowDialog()) {
 			opndfileName = this->openFileDialog1->FileName;
-			ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::openFileProccess);
-			thread = gcnew Thread(ts);
-			thread->Start();
+			if (!thread->IsAlive) {
+				ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::openFileProccess);
+				thread = gcnew Thread(ts);
+				thread->Start();
+			}
 		}
 	}
+			 //обработка нажатия кнопки "Закрыть"
+			 private: System::Void CloseMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+				dataGridView1->Rows->Clear();
+				if (!thread->IsAlive) {
+					ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::drawNewStrings);
+					thread = gcnew Thread(ts);
+					thread->Start();
+				}	
+				textUnderMenu->Text = ":";
+			 }
 			 //обработка нажатия кнопки меню "выход"
 	private: System::Void ExitMenuItem1_Click(System::Object^  sender, System::EventArgs^  e) {
 		this->Close();
@@ -417,8 +435,6 @@ namespace GcodeViewer {
 
 			 //обработка события CellEnter
 	private: System::Void dataGridView1_CellEnter(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
-		
-		
 	}
 			 //обработка события CellLeave для строки таблицы
 	private: System::Void dataGridView1_CellLeave(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
@@ -427,7 +443,7 @@ namespace GcodeViewer {
 			ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::drawNewStrings);
 			thread = gcnew Thread(ts);
 			thread->Start();
-		}
+		}	
 	}
 			 //обработка события нажатия Любой кнопки по таблице
 	private: System::Void dataGridView1_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
@@ -679,13 +695,13 @@ namespace GcodeViewer {
 					 fileisopen = true;
 				 }
 				 else {
-					 //		 this->textUnderMenu->Text = "íå îòêðûòñÿ" + opndfileName;
+					 		 this->textUnderMenu->Text = "not open file:" + opndfileName;
 				 }
 
 			 }
+			 //обсчитывает границы траектории и задает целевую точку для камеры по центру траектории
 			 void fileIsOpenNow() {
 				 if (fileisopen) {
-					 this->textUnderMenu->Text = " открыт:" + opndfileName;
 					 this->dataGridView1->Rows->Clear();
 					 this->dataGridView1->RowCount = gdata->commands->Count;
 					 int rowNumber = 1;
@@ -705,6 +721,9 @@ namespace GcodeViewer {
 					 mdlX = (gdata->minX + gdata->maxX) / 2;
 					 mdlY = (gdata->minY + gdata->maxY) / 2;
 					 mdlZ = (gdata->minZ + gdata->maxZ) / 2;
+					 eyeX = eyeX - targetX + mdlX;
+					 eyeY = eyeY - targetY + mdlY;
+					 eyeZ = eyeZ - targetZ + gdata->minZ;
 					 targetX = mdlX;
 					 targetY = mdlY;
 					 targetZ = gdata->minZ;
@@ -713,11 +732,13 @@ namespace GcodeViewer {
 			 }
 			 void drawNewStrings() {
 				 Generic::List<String^>^  cmds = gcnew Generic::List<String^>();
+				 if (dataGridView1->Rows != nullptr) {
 					 for (int i = 0; i < dataGridView1->Rows->Count; i++)
 					 {
 						 cmds->Insert(i, (String^)dataGridView1->Rows[i]->Cells[0]->Value);
 					 }
-				 gdata->tranlate(cmds);
+					 gdata->tranlate(cmds);
+				 }
 			 }
 	};
 }
