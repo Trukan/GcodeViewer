@@ -9,6 +9,7 @@ namespace GcodeViewer {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::IO;
 	using namespace System::Threading;
 	using namespace OpenTK;
 	using namespace OpenTK::Platform::Windows;
@@ -45,12 +46,12 @@ namespace GcodeViewer {
 	private: OpenTK::GLControl^  glControl1;
 	protected:
 	private: System::Windows::Forms::ToolStrip^  toolStrip1;
-	private: System::Windows::Forms::ToolStripDropDownButton^  toolStripDropDownButton1;
-	private: System::Windows::Forms::ToolStripMenuItem^  открытьToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  сохранитьToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  сохранитьКакToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  закрытьToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  выходToolStripMenuItem1;
+	private: System::Windows::Forms::ToolStripDropDownButton^  dropDownButton1;
+	private: System::Windows::Forms::ToolStripMenuItem^  OpenFileMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  SaveFileMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  SaveAsFileMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  CloseMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  ExitMenuItem;
 
 	private: System::Windows::Forms::OpenFileDialog^  openFileDialog1;
 	private: System::Windows::Forms::SaveFileDialog^  saveFileDialog1;
@@ -110,12 +111,12 @@ namespace GcodeViewer {
 			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle4 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			this->glControl1 = (gcnew OpenTK::GLControl());
 			this->toolStrip1 = (gcnew System::Windows::Forms::ToolStrip());
-			this->toolStripDropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
-			this->открытьToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->сохранитьToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->сохранитьКакToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->закрытьToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->выходToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->dropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
+			this->OpenFileMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->SaveFileMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->SaveAsFileMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->CloseMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->ExitMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->textUnderMenu = (gcnew System::Windows::Forms::TextBox());
 			this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
@@ -149,58 +150,58 @@ namespace GcodeViewer {
 			// 
 			// toolStrip1
 			// 
-			this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->toolStripDropDownButton1 });
+			this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->dropDownButton1 });
 			this->toolStrip1->Location = System::Drawing::Point(0, 0);
 			this->toolStrip1->Name = L"toolStrip1";
 			this->toolStrip1->Size = System::Drawing::Size(1008, 25);
 			this->toolStrip1->TabIndex = 1;
 			this->toolStrip1->Text = L"toolStrip1";
 			// 
-			// toolStripDropDownButton1
+			// dropDownButton1
 			// 
-			this->toolStripDropDownButton1->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-			this->toolStripDropDownButton1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(5) {
-				this->открытьToolStripMenuItem,
-					this->сохранитьToolStripMenuItem, this->сохранитьКакToolStripMenuItem, this->закрытьToolStripMenuItem, this->выходToolStripMenuItem1
+			this->dropDownButton1->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
+			this->dropDownButton1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(5) {
+				this->OpenFileMenuItem,
+					this->SaveFileMenuItem, this->SaveAsFileMenuItem, this->CloseMenuItem, this->ExitMenuItem
 			});
-			this->toolStripDropDownButton1->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripDropDownButton1.Image")));
-			this->toolStripDropDownButton1->ImageTransparentColor = System::Drawing::Color::Magenta;
-			this->toolStripDropDownButton1->Name = L"toolStripDropDownButton1";
-			this->toolStripDropDownButton1->Size = System::Drawing::Size(29, 22);
-			this->toolStripDropDownButton1->Text = L"toolStripDropDownButton1";
+			this->dropDownButton1->ImageTransparentColor = System::Drawing::Color::Magenta;
+			this->dropDownButton1->Name = L"dropDownButton1";
+			this->dropDownButton1->Size = System::Drawing::Size(80, 22);
+			this->dropDownButton1->Text = L"Файл";
 			// 
-			// открытьToolStripMenuItem
+			// OpenFileMenuItem
 			// 
-			this->открытьToolStripMenuItem->Name = L"открытьToolStripMenuItem";
-			this->открытьToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->открытьToolStripMenuItem->Text = L"Открыть";
-			this->открытьToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::открытьToolStripMenuItem_Click);
+			this->OpenFileMenuItem->Name = L"OpenFileMenuItem";
+			this->OpenFileMenuItem->Size = System::Drawing::Size(153, 22);
+			this->OpenFileMenuItem->Text = L"Открыть";
+			this->OpenFileMenuItem->Click += gcnew System::EventHandler(this, &MainForm::OpenFileMenuItem_Click);
 			// 
-			// сохранитьToolStripMenuItem
+			// SaveFileMenuItem
 			// 
-			this->сохранитьToolStripMenuItem->Name = L"сохранитьToolStripMenuItem";
-			this->сохранитьToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->сохранитьToolStripMenuItem->Text = L"Сохранить";
+			this->SaveFileMenuItem->Name = L"SaveFileMenuItem";
+			this->SaveFileMenuItem->Size = System::Drawing::Size(153, 22);
+			this->SaveFileMenuItem->Text = L"Сохранить";
+			this->SaveFileMenuItem->Click += gcnew System::EventHandler(this, &MainForm::SaveFileMenuItem_Click);
 			// 
-			// сохранитьКакToolStripMenuItem
+			// SaveAsFileMenuItem
 			// 
-			this->сохранитьКакToolStripMenuItem->Name = L"сохранитьКакToolStripMenuItem";
-			this->сохранитьКакToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->сохранитьКакToolStripMenuItem->Text = L"Сохранить как";
-			this->сохранитьКакToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::сохранитьКакToolStripMenuItem_Click);
+			this->SaveAsFileMenuItem->Name = L"SaveAsFileMenuItem";
+			this->SaveAsFileMenuItem->Size = System::Drawing::Size(153, 22);
+			this->SaveAsFileMenuItem->Text = L"Сохранить как";
+			this->SaveAsFileMenuItem->Click += gcnew System::EventHandler(this, &MainForm::SaveAsFileMenuItem_Click);
 			// 
-			// закрытьToolStripMenuItem
+			// CloseMenuItem
 			// 
-			this->закрытьToolStripMenuItem->Name = L"закрытьToolStripMenuItem";
-			this->закрытьToolStripMenuItem->Size = System::Drawing::Size(153, 22);
-			this->закрытьToolStripMenuItem->Text = L"Закрыть";
+			this->CloseMenuItem->Name = L"CloseMenuItem";
+			this->CloseMenuItem->Size = System::Drawing::Size(153, 22);
+			this->CloseMenuItem->Text = L"Закрыть";
 			// 
-			// выходToolStripMenuItem1
+			// ExitMenuItem
 			// 
-			this->выходToolStripMenuItem1->Name = L"выходToolStripMenuItem1";
-			this->выходToolStripMenuItem1->Size = System::Drawing::Size(153, 22);
-			this->выходToolStripMenuItem1->Text = L"Выход";
-			this->выходToolStripMenuItem1->Click += gcnew System::EventHandler(this, &MainForm::выходToolStripMenuItem1_Click);
+			this->ExitMenuItem->Name = L"ExitMenuItem";
+			this->ExitMenuItem->Size = System::Drawing::Size(153, 22);
+			this->ExitMenuItem->Text = L"Выход";
+			this->ExitMenuItem->Click += gcnew System::EventHandler(this, &MainForm::ExitMenuItem1_Click);
 			// 
 			// textUnderMenu
 			// 
@@ -348,28 +349,47 @@ namespace GcodeViewer {
 
 		}
 #pragma endregion
+		//обработка нажатия кнопки меню "Сохранить"
+	private: System::Void SaveFileMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+			StreamWriter ^sw = gcnew StreamWriter(opndfileName);
+			for (int i = 0; i < dataGridView1->Rows->Count; i++)
+			{
+				sw->WriteLine(dataGridView1->Rows[i]->Cells[0]->Value);
+			}
+			sw->Close();
+			delete sw;
+			this->toolStripStatusLabel1->Text = "файл " + opndfileName + " сохранен";
+	}
 		//обработка нажатия кнопки меню "Сохранить как"
-	private: System::Void сохранитьКакToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+	private: System::Void SaveAsFileMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 		this->saveFileDialog1->FileName = opndfileName;
-		if (System::Windows::Forms::DialogResult::OK == this->saveFileDialog1->ShowDialog())
-			this->textUnderMenu->Text = this->saveFileDialog1->FileName + " типа сохранен";
-		else
-			this->Text = L"GcodeViewer";
+		if (System::Windows::Forms::DialogResult::OK == this->saveFileDialog1->ShowDialog()) {
+			opndfileName = this->saveFileDialog1->FileName;
+			this->Text = "GcodeViewer: " + this->opndfileName;
+			StreamWriter ^sw = gcnew StreamWriter(opndfileName);
+			for (int i = 0; i < dataGridView1->Rows->Count; i++)
+			{
+				sw->WriteLine(dataGridView1->Rows[i]->Cells[0]->Value);
+			}
+			sw->Close();
+			delete sw;
+		}
+		else {
+			this->Text = L"GcodeViewer: ";
+		}
 	}
 
 			 //обработка нажатия кнопки меню "открыть"
-	private: System::Void открытьToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+	private: System::Void OpenFileMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 		if (System::Windows::Forms::DialogResult::OK == this->openFileDialog1->ShowDialog()) {
 			opndfileName = this->openFileDialog1->FileName;
 			ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::openFileProccess);
 			thread = gcnew Thread(ts);
 			thread->Start();
 		}
-		
-		
 	}
 			 //обработка нажатия кнопки меню "выход"
-	private: System::Void выходToolStripMenuItem1_Click(System::Object^  sender, System::EventArgs^  e) {
+	private: System::Void ExitMenuItem1_Click(System::Object^  sender, System::EventArgs^  e) {
 		this->Close();
 	}
 			 //обработка изменения размеров окна
@@ -389,34 +409,47 @@ namespace GcodeViewer {
 		Matrix4 perspective = Matrix4::CreatePerspectiveFieldOfView((float)(90 * Math::Asin(1.0f) / 90), (float)glControl1->Width / glControl1->Height, (float)0.05, (float)2000);
 		GL::LoadMatrix(perspective);
 		GL::ClearColor(Color::WhiteSmoke);
-		Console::Write(" Resize GL ");
 	}
 			 //обработка события CellBeginEdit
 	private: System::Void dataGridView1_CellBeginEdit(System::Object^  sender, System::Windows::Forms::DataGridViewCellCancelEventArgs^  e) {
+			this->toolStripStatusLabel1->Text =""+this->dataGridView1->Rows[e->RowIndex]->Cells[0];
 	}
 
 			 //обработка события CellEnter
 	private: System::Void dataGridView1_CellEnter(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
-		this->toolStripStatusLabel1->Text = "" + this->dataGridView1->CurrentCell->RowIndex + ":" +
-			this->dataGridView1->CurrentCell->ColumnIndex +
-			"BeginEdit:" + this->dataGridView1->BeginEdit(true);
+		
+		
 	}
 			 //обработка события CellLeave для строки таблицы
 	private: System::Void dataGridView1_CellLeave(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
 		this->dataGridView1->EndEdit();
+		if (!thread->IsAlive) {
+			ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::drawNewStrings);
+			thread = gcnew Thread(ts);
+			thread->Start();
+		}
 	}
 			 //обработка события нажатия Любой кнопки по таблице
 	private: System::Void dataGridView1_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
+		int in = ((int)e->KeyCode);
+		this->toolStripStatusLabel1->Text = "" + in;
 
 	}
 			 //обработка события нажатия Любой кнопки по таблице
 	private: System::Void dataGridView1_PreviewKeyDown(System::Object^  sender, System::Windows::Forms::PreviewKeyDownEventArgs^  e) {
 		if (this->dataGridView1->SelectedCells->Count != 0) {
 			switch (e->KeyCode) {
-				//		case Keys::Delete:
-				//			if(this->dataGridView1->EditingControl!=nullptr)
-				//				this->dataGridView1->Rows->RemoveAt(this->dataGridView1->CurrentCell->RowIndex);
-				//			break;
+						case Keys::Back:
+							//this->dataGridView1->EditingControl!=nullptr&&
+							if (this->dataGridView1->CurrentCell->RowIndex < this->dataGridView1->Rows->Count - 1) {
+								this->dataGridView1->Rows->RemoveAt(this->dataGridView1->CurrentCell->RowIndex);
+								if (!thread->IsAlive) {
+									ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::drawNewStrings);
+									thread = gcnew Thread(ts);
+									thread->Start();
+								}
+							}
+							break;
 			case Keys::Escape:
 				this->dataGridView1->CurrentCell = nullptr;
 				break;
@@ -426,7 +459,10 @@ namespace GcodeViewer {
 				this->toolStripStatusLabel1->Text = "" + this->dataGridView1->CurrentCell->RowIndex + ":" +
 					this->dataGridView1->CurrentCell->ColumnIndex + "rowCount" + this->dataGridView1->Rows->Count;
 				break;
-			}
+			default:
+				
+				break;
+				}
 		}
 	}
 
@@ -451,13 +487,6 @@ namespace GcodeViewer {
 			eyeZ = eyeZ / multiplyEye;
 		}
 		changeModelView();
-		//	targetX = 30, targetY = 30;
-		//	glControl1->Width, glControl1->Height
-			/*rXY = Math::Sqrt((Math::Pow(eyeX- targetX, 2) + Math::Pow(eyeY- targetY, 2)));
-					 startAngG = startAngG + U;
-					 eyeX = (float)(rXY*Math::Sin(startAngG)+ targetX);
-					 eyeY = (float)(rXY*Math::Cos(startAngG)+ targetY);
-					 */
 	}
 			 //обработка тика таймера
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
@@ -505,8 +534,6 @@ namespace GcodeViewer {
 			angleV = ((double)(mY - mdY))*pi / (glControl1->Height);
 			rotateG(angleG);
 			rotateV(angleV);
-			//		eyeX = (float)(rXY*Math::Sin(Math::Asin(eyeX / rXY) + angleG));
-		//			eyeY = (float)(rXY*Math::Cos(Math::Acos(eyeY / rXY) + angleG));
 			changeModelView();
 			mdX = mX;
 			mdY = mY;
@@ -517,7 +544,6 @@ namespace GcodeViewer {
 		if (!mdown) {
 			mdX = e->X;
 			mdY = e->Y;
-			//		angleG = Math::sin
 		}
 		mdown = true;
 	}
@@ -684,6 +710,14 @@ namespace GcodeViewer {
 					 targetZ = gdata->minZ;
 					 fileisopen = false;
 				 }
+			 }
+			 void drawNewStrings() {
+				 Generic::List<String^>^  cmds = gcnew Generic::List<String^>();
+					 for (int i = 0; i < dataGridView1->Rows->Count; i++)
+					 {
+						 cmds->Insert(i, (String^)dataGridView1->Rows[i]->Cells[0]->Value);
+					 }
+				 gdata->tranlate(cmds);
 			 }
 	};
 }
