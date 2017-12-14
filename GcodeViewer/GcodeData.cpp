@@ -32,7 +32,7 @@ bool GcodeData::loadFile(String^ filepath)
 	if (filepath == nullptr || !File::Exists(filepath))
 		return false;
 	Kadr::reset(true);
-	reset();
+	resetMinMax();
 	try {
 		commands->Clear();
 		StreamReader ^sr = gcnew StreamReader(filepath);
@@ -61,12 +61,10 @@ Generic::List<Polyline^>^ GData::GcodeData::tranlate(System::Collections::Generi
 	//если коллекция пуста, то нечего и dелать
 	if (cmds == nullptr || cmds->Count < 1)
 		return nullptr;
-	//модальные состояния (сквозные)
-//	GData::GState gstate = GState::None;
-//	GData::MState mstate = MState::None;
 	//состояние строки
 	GData::Kadr^ kstate = gcnew Kadr();
 	polylines = gcnew Generic::List<Polyline^>();
+	errorRows->Clear();
 	//пройдемся по коллекции comds
 	int i = 0, j = 0;
 	while (i < cmds->Count) {
@@ -126,7 +124,7 @@ bool GcodeData::checkMinMax() {
 	return true;
 }
 
-void GData::GcodeData::reset()
+void GData::GcodeData::resetMinMax()
 {
 	minX = 0; maxX = 0;
 	minY = 0; maxY = 0;

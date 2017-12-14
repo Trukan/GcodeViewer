@@ -35,7 +35,7 @@ namespace GData {
 		bool loadFile(String^ filepath);
 		//фиксирует минимальные максмальные координаты всех кадров
 		bool checkMinMax();
-		void reset();
+		void resetMinMax();
 		//функция транслирующая строчные команды коллекции в траекторию, 
 		// в ломаные линии некоторых цветов в коллекцию polylines
 		System::Collections::Generic::List<Polyline^>^ tranlate(System::Collections::Generic::List<String^>^ cmds);

@@ -111,6 +111,7 @@ namespace GcodeViewer {
 			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle3 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle4 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  errorRowHeaderStyle = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			this->glControl1 = (gcnew OpenTK::GLControl());
 			this->toolStrip1 = (gcnew System::Windows::Forms::ToolStrip());
 			this->dropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
@@ -302,6 +303,16 @@ namespace GcodeViewer {
 			dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle4;
+			errorRowHeaderStyle->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			errorRowHeaderStyle->BackColor = Color::FromArgb(245,20,20);
+			errorRowHeaderStyle->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			errorRowHeaderStyle->ForeColor = System::Drawing::SystemColors::WindowText;
+			errorRowHeaderStyle->Format = L"N0";
+			errorRowHeaderStyle->NullValue = nullptr;
+			errorRowHeaderStyle->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
+			errorRowHeaderStyle->SelectionForeColor = System::Drawing::SystemColors::Desktop;
+			errorRowHeaderStyle->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
 			this->dataGridView1->RowTemplate->DefaultCellStyle->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
 			this->dataGridView1->RowTemplate->ErrorText = L"00000";
@@ -430,7 +441,6 @@ namespace GcodeViewer {
 	}
 			 //обработка события CellBeginEdit
 	private: System::Void dataGridView1_CellBeginEdit(System::Object^  sender, System::Windows::Forms::DataGridViewCellCancelEventArgs^  e) {
-			this->toolStripStatusLabel1->Text =""+this->dataGridView1->Rows[e->RowIndex]->Cells[0];
 	}
 
 			 //обработка события CellEnter
@@ -443,12 +453,13 @@ namespace GcodeViewer {
 			ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::drawNewStrings);
 			thread = gcnew Thread(ts);
 			thread->Start();
-		}	
+		}
+		setRowHeaders();
 	}
 			 //обработка события нажатия Любой кнопки по таблице
 	private: System::Void dataGridView1_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
 		int in = ((int)e->KeyCode);
-		this->toolStripStatusLabel1->Text = "" + in;
+		this->toolStripStatusLabel1->Text = "KeyCode:" + in;
 
 	}
 			 //обработка события нажатия Любой кнопки по таблице
@@ -456,24 +467,23 @@ namespace GcodeViewer {
 		if (this->dataGridView1->SelectedCells->Count != 0) {
 			switch (e->KeyCode) {
 						case Keys::Back:
-							//this->dataGridView1->EditingControl!=nullptr&&
 							if (this->dataGridView1->CurrentCell->RowIndex < this->dataGridView1->Rows->Count - 1) {
 								this->dataGridView1->Rows->RemoveAt(this->dataGridView1->CurrentCell->RowIndex);
 								if (!thread->IsAlive) {
 									ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::drawNewStrings);
 									thread = gcnew Thread(ts);
 									thread->Start();
+									setRowHeaders();
 								}
 							}
 							break;
 			case Keys::Escape:
 				this->dataGridView1->CurrentCell = nullptr;
 				break;
-			case Keys::Enter:
+		    case Keys::Enter:
 				if (this->dataGridView1->CurrentCell->RowIndex + 1 < this->dataGridView1->Rows->Count)
 					this->dataGridView1->Rows->Insert(this->dataGridView1->CurrentCell->RowIndex + 1, 1);
-				this->toolStripStatusLabel1->Text = "" + this->dataGridView1->CurrentCell->RowIndex + ":" +
-					this->dataGridView1->CurrentCell->ColumnIndex + "rowCount" + this->dataGridView1->Rows->Count;
+				setRowHeaders();
 				break;
 			default:
 				
@@ -690,6 +700,7 @@ namespace GcodeViewer {
 				 GL::Vertex3(x + 3, y, z); GL::Vertex3(x, y - 3, z);
 				 GL::End();
 			 }
+			 //
 			 System::Void MainForm::openFileProccess() {
 				 if (gdata->loadFile(opndfileName)) {
 					 fileisopen = true;
@@ -699,7 +710,7 @@ namespace GcodeViewer {
 				 }
 
 			 }
-			 //обсчитывает границы траектории и задает целевую точку для камеры по центру траектории
+			 //обсчитывает границы траектории, заполняет таблицу и задает целевую точку для камеры по центру траектории
 			 void fileIsOpenNow() {
 				 if (fileisopen) {
 					 this->dataGridView1->Rows->Clear();
@@ -727,9 +738,11 @@ namespace GcodeViewer {
 					 targetX = mdlX;
 					 targetY = mdlY;
 					 targetZ = gdata->minZ;
+					 setRowHeaders();
 					 fileisopen = false;
 				 }
 			 }
+			 //отрисовка измененной таблицы
 			 void drawNewStrings() {
 				 Generic::List<String^>^  cmds = gcnew Generic::List<String^>();
 				 if (dataGridView1->Rows != nullptr) {
@@ -738,6 +751,19 @@ namespace GcodeViewer {
 						 cmds->Insert(i, (String^)dataGridView1->Rows[i]->Cells[0]->Value);
 					 }
 					 gdata->tranlate(cmds);
+				 }
+			 }
+			 //установка нумерации строк и отметки ошибочных строк
+			 void setRowHeaders() {
+				 int rowNumber = 1;
+				 for (int i = 0; i < dataGridView1->Rows->Count; i++, rowNumber++)
+				 {
+					 dataGridView1->Rows[i]->HeaderCell->Value = String::Format(L"{0}", rowNumber);
+					 dataGridView1->Rows[i]->HeaderCell->Style->BackColor = System::Drawing::SystemColors::ScrollBar;
+				 }
+				 for (int i = 0; i < gdata->errorRows->Count; i++)
+				 {
+					 dataGridView1->Rows[gdata->errorRows[i]]->HeaderCell->Style->BackColor = Color::Red;
 				 }
 			 }
 	};
