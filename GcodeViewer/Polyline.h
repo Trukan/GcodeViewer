@@ -17,7 +17,7 @@ namespace GData {
 		~Polyline() {};
 	public:
 		//рекомендуемая предельная толщина снимаемого слоя, мм/об (без учета многозаходного инструмента)
-		static float stickLimit = (float)0.1; 
+		static float stickLimit = 0.5; 
 		//рекомендуемая предельная подача, мм 
 		static float feedLimit = 4000;
 		GState gstate = GState::None;

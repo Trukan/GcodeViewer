@@ -27,7 +27,7 @@ namespace GData {
 			bx, by, bz,
 			bi, bj, bk,
 			fool;	//показывает, был ли полный сброс
-		static	int s = 0;
+		static	int s;
 		static GState curGstate;
 		static	float feedrate;
 		static	float feedNoLoad;
@@ -54,6 +54,8 @@ namespace GData {
 		//интерполирует сектор круга в списки координат
 		static	bool interpolateClockwise(float lx, float ly, float lz, float x, float y, float i, float j,
 			Generic::List<float>^ listx, Generic::List<float>^ listy, Generic::List<float>^ listz);
+
+		static	bool interpolateCntrClockwise(float lx, float ly, float lz, float x, float y, float i, float j, Generic::List<float>^ listx, Generic::List<float>^ listy, Generic::List<float>^ listz);
 
 		static	bool isGoodLetter(wchar_t);
 	};

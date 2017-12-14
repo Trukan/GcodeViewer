@@ -21,16 +21,25 @@ bool GData::Polyline::update()
 //в виде чисел red, green, blue
 void GData::Polyline::stickToColor()
 {
-	float stick = this->feed / this->speedrate;
+	float sr = (float)this->speedrate;
+	float stick = this->feed / 8000;
 	if (this->feed > Polyline::feedLimit) this->red=100;
-	if (stick <= Polyline::stickLimit) {
-		float t = 2*stick / stickLimit;
-		this->blue = (int)(2 - t) * 255 + (int)(t - 0.001)*(int)((2 - t) * 255);
-		this->green = (int)(t - 0.001) * 255 + (int)(2-t)*(int)(t * 255);
+	if (stick < Polyline::stickLimit) {
+		if (stick*2 < Polyline::stickLimit) {
+			this->blue = 255;
+			this->green = 0;
+		}
+		else {
+			this->blue = 0;
+			this->green = 255;
+		}	
+	//	float t = 2*stick / stickLimit;
+	//	this->blue = (int)(2 - t) * 255 + (int)(t - 0.001)*(int)((2 - t) * 255);
+	//	this->green = (int)(t - 0.001) * 255 + (int)(2-t)*(int)(t * 255);
 	}
 	else {
 		this->blue = 0;
-		this->green = 200;
+		this->green = 100;
 		this->red += 155;
 	}
 }
