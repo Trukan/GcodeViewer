@@ -111,7 +111,7 @@ namespace GcodeViewer {
 			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle3 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle4 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  errorRowHeaderStyle = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+	//		System::Windows::Forms::DataGridViewCellStyle^  errorRowHeaderStyle = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			this->glControl1 = (gcnew OpenTK::GLControl());
 			this->toolStrip1 = (gcnew System::Windows::Forms::ToolStrip());
 			this->dropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
@@ -303,7 +303,7 @@ namespace GcodeViewer {
 			dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle4;
-			errorRowHeaderStyle->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+	/*		errorRowHeaderStyle->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
 			errorRowHeaderStyle->BackColor = Color::FromArgb(245,20,20);
 			errorRowHeaderStyle->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
@@ -313,7 +313,7 @@ namespace GcodeViewer {
 			errorRowHeaderStyle->SelectionBackColor = System::Drawing::SystemColors::GradientActiveCaption;
 			errorRowHeaderStyle->SelectionForeColor = System::Drawing::SystemColors::Desktop;
 			errorRowHeaderStyle->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dataGridView1->RowTemplate->DefaultCellStyle->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular,
+	*/		this->dataGridView1->RowTemplate->DefaultCellStyle->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
 			this->dataGridView1->RowTemplate->ErrorText = L"00000";
 			this->dataGridView1->RowTemplate->Height = 17;
@@ -410,11 +410,13 @@ namespace GcodeViewer {
 			 //обработка нажатия кнопки "Закрыть"
 			 private: System::Void CloseMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 				dataGridView1->Rows->Clear();
-				if (!thread->IsAlive) {
+			/*	if (!thread->IsAlive) {
 					ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::drawNewStrings);
 					thread = gcnew Thread(ts);
 					thread->Start();
 				}	
+			*/
+				drawNewStrings();
 				textUnderMenu->Text = ":";
 			 }
 			 //обработка нажатия кнопки меню "выход"
@@ -449,11 +451,13 @@ namespace GcodeViewer {
 			 //обработка события CellLeave для строки таблицы
 	private: System::Void dataGridView1_CellLeave(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
 		this->dataGridView1->EndEdit();
-		if (!thread->IsAlive) {
+	/*	if (!thread->IsAlive) {
 			ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::drawNewStrings);
 			thread = gcnew Thread(ts);
 			thread->Start();
 		}
+	*/
+		drawNewStrings();
 		setRowHeaders();
 	}
 			 //обработка события нажатия Любой кнопки по таблице
@@ -469,12 +473,14 @@ namespace GcodeViewer {
 						case Keys::Back:
 							if (this->dataGridView1->CurrentCell->RowIndex < this->dataGridView1->Rows->Count - 1) {
 								this->dataGridView1->Rows->RemoveAt(this->dataGridView1->CurrentCell->RowIndex);
-								if (!thread->IsAlive) {
+		/*						if (!thread->IsAlive) {
 									ThreadStart ^ts = gcnew ThreadStart(this, &MainForm::drawNewStrings);
 									thread = gcnew Thread(ts);
 									thread->Start();
+		*/	
+								drawNewStrings();
 									setRowHeaders();
-								}
+		//						}
 							}
 							break;
 			case Keys::Escape:
